@@ -10,7 +10,8 @@ func main() {
 	handler := http.HandlerFunc(Echo)
 	const serveURL string = "localhost:8000"
 
-	log.Printf("Serving at %s\n", serveURL)
+	log.Printf("Server started. Listening at %s\n", serveURL)
+	defer log.Print("Server stopped.")
 
 	if err := http.ListenAndServe(serveURL, handler); err != nil {
 		log.Fatalf("ERROR: %s\n", err)
