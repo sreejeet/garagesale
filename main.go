@@ -8,9 +8,12 @@ import (
 
 func main() {
 	handler := http.HandlerFunc(Echo)
+	const serveURL string = "localhost:8000"
 
-	if err := http.ListenAndServe("localhost:8000", handler); err != nil {
-		log.Fatal("ERROR: %s\n", err)
+	log.Printf("Serving at %s\n", serveURL)
+
+	if err := http.ListenAndServe(serveURL, handler); err != nil {
+		log.Fatalf("ERROR: %s\n", err)
 	}
 }
 
