@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,13 +16,13 @@ func main() {
 	const serveURL string = "localhost:8000"
 
 	// Basic logging
-	log.Printf("Starting service")
-	defer log.Print("Ending service")
+	log.Printf("Started service")
+	defer log.Print("Ended service")
 
 	// Create api as a http.Server
 	api := http.Server{
 		Addr:         serveURL,
-		Handler:      http.HandlerFunc(Echo),
+		Handler:      http.HandlerFunc(ListProducts),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}
@@ -70,16 +69,34 @@ func main() {
 	}
 }
 
-// Echo is a basic http handler
-func Echo(w http.ResponseWriter, r *http.Request) {
+// Product is a type declared for items in our garage sale
+type Product struct {
+	Name     string `json:"name"`
+	Cost     int    `json:"cost"`
+	Quantity int    `json:"quantity"`
+}
 
-	// Printing reandom numbers at begining and emd of each request
-	n := rand.Intn(10000)
-	log.Println("Start", n)
-	defer log.Println("End", n)
+// ListProducts is an http handler for returning
+// a json list of products.
+func ListProducts(w http.ResponseWriter, r *http.Request) {
 
-	// Simulate long running request
-	time.Sleep(3 * time.Second)
+	list := []Product{
+		{Name: "Oil painting", Cost: 500, Quantity: 1},
+		{Name: "Intel Pentium 4 CPU", Cost: 5000, Quantity: 1},
+		{Name: "Fresh Pizza from 2004", Cost: 2, Quantity: 5},
+	}
 
-	fmt.Fprintf(w, "Performed %s %s\n", r.Method, r.URL.Path)
+	// Marshalling (converting) product slice to json array
+	data, err := json.Marshal(list)
+	if err != nil {
+		log.Print("Error parsing json:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	if _, err := w.Write(data); err != nil {
+		log.Print("Error writing json:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
