@@ -1,6 +1,6 @@
 # Training for Go (golang) web services.
 
-This is a product of my work while training for Go based web services.
+This is a product of my work while training for Go based web services.  
 You can find the training material at https://github.com/ardanlabs/service-training.
 
 ## Here is a consolidated list of resources I found useful.
