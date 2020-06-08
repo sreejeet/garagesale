@@ -5,6 +5,6 @@ You can find the training material at https://github.com/ardanlabs/service-train
 
 ## Here is a consolidated list of resources I found useful.
 
-1. https://blog.cloudflare.com/the-complete-guide-to-golang-net-http-timeouts/
-2. https://blog.cloudflare.com/exposing-go-on-the-internet/
-3. https://tutorialedge.net/golang/parsing-json-with-golang/
+1. [The complete guide to Go net/http timeouts](https://blog.cloudflare.com/the-complete-guide-to-golang-net-http-timeouts/)
+2. [So you want to expose Go on the Internet](https://blog.cloudflare.com/exposing-go-on-the-internet/)
+3. [Parsing JSON files With Golang](https://tutorialedge.net/golang/parsing-json-with-golang/)
