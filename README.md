@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/sreejeet/garagesale)](https://goreportcard.com/report/github.com/sreejeet/garagesale)
+### (Work in progress)
 # Garagesale RESTful API service.
 
 A RESTful web service built using idiomatic Go code.  
