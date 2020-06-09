@@ -118,7 +118,7 @@ type Products struct {
 	db *sqlx.DB
 }
 
-// ListProducts is an http handler for returning
+// List is an http handler for returning
 // a json list of products.
 func (p *Products) List(w http.ResponseWriter, r *http.Request) {
 
