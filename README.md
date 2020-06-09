@@ -4,7 +4,7 @@ A RESTful web service built using idiomatic Go code.
 Running on Docker using PostgreSQL.
 
 This is a product of my work while training for Go based web services.  
-The open source [training material](https://github.com/ardanlabs/service-training) is provided by (Ardan Labs)[http://www.ardanlabs.com/].
+The open source [training material](https://github.com/ardanlabs/service-training) is provided by [Ardan Labs](http://www.ardanlabs.com/).
 
 ## Tech stack
 1. Go's [net/http](https://golang.org/pkg/net/http/)
