@@ -3,12 +3,17 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/sreejeet/garagesale/schema"
 )
 
 func main() {
@@ -18,6 +23,32 @@ func main() {
 	// Basic logging
 	log.Printf("Started service")
 	defer log.Print("Ended service")
+
+	// Start database
+	db, err := openDB()
+	if err != nil {
+		log.Fatalf("Error opening database: %s\n", err)
+	}
+	defer db.Close()
+
+	flag.Parse()
+
+	switch flag.Arg(0) {
+	case "migrate":
+		if err := schema.Migrate(db); err != nil {
+			log.Println("Error applying migrations", err)
+			os.Exit(1)
+		}
+		log.Println("Completed migration")
+		return
+	case "seed":
+		if err := schema.Seed(db); err != nil {
+			log.Println("Error seeding database", err)
+			os.Exit(1)
+		}
+		log.Println("Completed seeding database")
+		return
+	}
 
 	// Create api as a http.Server
 	api := http.Server{
@@ -99,4 +130,20 @@ func ListProducts(w http.ResponseWriter, r *http.Request) {
 		log.Print("Error writing json:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+}
+
+func openDB() (*sqlx.DB, error) {
+	urlQuery := url.Values{}
+	urlQuery.Set("sslmode", "disable")
+	urlQuery.Set("timezone", "utc")
+
+	url := url.URL{
+		Scheme:   "postgres",
+		User:     url.UserPassword("postgres", "psotgres"),
+		Host:     "localhost",
+		Path:     "postgres",
+		RawQuery: urlQuery.Encode(),
+	}
+
+	return sqlx.Open("postgres", url.String())
 }
