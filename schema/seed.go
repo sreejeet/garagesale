@@ -10,7 +10,7 @@ const seed = `INSERT INTO products (product_id, name, cost, quantity, date_creat
 // Seed runs the above query to add some data and bring the database into a usefule state.
 func Seed(db *sqlx.DB) error {
 
-	// Using transactions in case a rollback is needed when errors occour
+	// Using transactions in case a rollback is needed when errors occur
 	tx, err := db.Begin()
 	if err != nil {
 		return err

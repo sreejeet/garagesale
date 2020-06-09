@@ -72,7 +72,7 @@ func main() {
 		serverErrors <- api.ListenAndServe()
 	}()
 
-	// Another channel to recieve OS signals like SIGINT or SIGTERM.
+	// Another channel to receive OS signals like SIGINT or SIGTERM.
 	// The signal package requires this channel to be buffered.
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
