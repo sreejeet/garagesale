@@ -16,3 +16,4 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 2. [So you want to expose Go on the Internet](https://blog.cloudflare.com/exposing-go-on-the-internet/)
 3. [Parsing JSON files With Golang](https://tutorialedge.net/golang/parsing-json-with-golang/)
 4. [Go database/sql tutorial](http://go-database-sql.org/)
+5. [Docker Compose](https://docs.docker.com/compose/compose-file)
