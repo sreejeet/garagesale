@@ -17,3 +17,4 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 3. [Parsing JSON files With Golang](https://tutorialedge.net/golang/parsing-json-with-golang/)
 4. [Go database/sql tutorial](http://go-database-sql.org/)
 5. [Docker Compose](https://docs.docker.com/compose/compose-file)
+6. [Docker logs](https://docs.docker.com/config/containers/logging/)
