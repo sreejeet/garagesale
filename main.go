@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"github.com/sreejeet/garagesale/schema"
 )
 
@@ -50,10 +51,12 @@ func main() {
 		return
 	}
 
+	service := Products{db: db}
+
 	// Create api as a http.Server
 	api := http.Server{
 		Addr:         serveURL,
-		Handler:      http.HandlerFunc(ListProducts),
+		Handler:      http.HandlerFunc(service.List),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}
@@ -121,9 +124,9 @@ func (p *Products) List(w http.ResponseWriter, r *http.Request) {
 
 	list := []Product{}
 
-	const query := `SELECT * FROM products;`
+	const query = `SELECT * FROM products;`
 
-	if err:= p.db.Select(&list, query); err != nil{
+	if err := p.db.Select(&list, query); err != nil {
 		log.Printf("Error retrieving product list: %s\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
