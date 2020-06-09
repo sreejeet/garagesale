@@ -102,19 +102,31 @@ func main() {
 
 // Product is a type declared for items in our garage sale
 type Product struct {
-	Name     string `json:"name"`
-	Cost     int    `json:"cost"`
-	Quantity int    `json:"quantity"`
+	ID          string    `db:"product_id" json:"id"`
+	Name        string    `db:"name" json:"name"`
+	Cost        int       `db:"cost" json:"cost"`
+	Quantity    int       `db:"quantity" json:"quantity"`
+	DateCreated time.Time `db:"date_created" json:"date_created"`
+	DateUpdated time.Time `db:"date_updated" json:"date_updated"`
+}
+
+// Products struct holds all business logic related to products
+type Products struct {
+	db *sqlx.DB
 }
 
 // ListProducts is an http handler for returning
 // a json list of products.
-func ListProducts(w http.ResponseWriter, r *http.Request) {
+func (p *Products) List(w http.ResponseWriter, r *http.Request) {
 
-	list := []Product{
-		{Name: "Oil painting", Cost: 500, Quantity: 1},
-		{Name: "Intel Pentium 4 CPU", Cost: 5000, Quantity: 1},
-		{Name: "Fresh Pizza from 2004", Cost: 2, Quantity: 5},
+	list := []Product{}
+
+	const query := `SELECT * FROM products;`
+
+	if err:= p.db.Select(&list, query); err != nil{
+		log.Printf("Error retrieving product list: %s\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	// Marshalling (converting) product slice to json array
