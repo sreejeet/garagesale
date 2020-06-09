@@ -1,0 +1,15 @@
+version: '3'
+
+networks:
+  shared-network:
+    driver: bridge
+
+services:
+  # PostgreSQL server
+  db:
+    container_name: sales_db
+    networks:
+      - shared-network
+    image: postgres:11.1-alpine
+    ports:
+      - 5432:5432
