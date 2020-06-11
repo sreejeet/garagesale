@@ -1,5 +1,5 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/sreejeet/garagesale)](https://goreportcard.com/report/github.com/sreejeet/garagesale)
-<img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/sreejeet/garagesale?style=flat-square">
+<img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/sreejeet/garagesale">&nbsp;<img src="http://goreportcard.com/badge/github.com/sreejeet/garagesale">
+
 ### (Work in progress)
 # Garagesale RESTful API service.
 
