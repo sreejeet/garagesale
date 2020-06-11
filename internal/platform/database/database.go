@@ -18,6 +18,8 @@ func Open() (*sqlx.DB, error) {
 		User:     url.UserPassword("postgres", "postgres"),
 		Host:     "localhost",
 		Path:     "postgres",
-		RawQuery: q.Encode(),
+		RawQuery: query.Encode(),
 	}
+
+	return sqlx.Open("postgres", url.String())
 }
