@@ -4,7 +4,7 @@ import (
 	"net/url"
 
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pkg" // The drier being used
+	_ "github.com/lib/pq" // The drier being used
 )
 
 // Open workds as an abstraction to open a database conn
