@@ -21,3 +21,4 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 4. [Go database/sql tutorial](http://go-database-sql.org/)
 5. [Docker Compose](https://docs.docker.com/compose/compose-file)
 6. [Docker logs](https://docs.docker.com/config/containers/logging/)
+7. [Package Oriented Design](https://www.ardanlabs.com/blog/2017/02/package-oriented-design.html)
