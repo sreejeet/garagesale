@@ -1,6 +1,8 @@
 <img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/sreejeet/garagesale">&nbsp;<img src="http://goreportcard.com/badge/github.com/sreejeet/garagesale">&nbsp;<img src="https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg">
 
 ### (Work in progress)
+<img alt="Image" src="https://i.imgur.com/5K6jBOC.png">
+
 # Production ready RESTful API service.
 
 Garagesale is a production ready RESTful API service running on docker. It is build without any framework to keep the service as light as possible.
