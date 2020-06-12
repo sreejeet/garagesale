@@ -1,10 +1,9 @@
 <img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/sreejeet/garagesale">&nbsp;<img src="http://goreportcard.com/badge/github.com/sreejeet/garagesale">&nbsp;<img src="https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg">
 
 ### (Work in progress)
-# Garagesale RESTful API service.
+# Production ready RESTful API service.
 
-A RESTful web service built using idiomatic Go code.  
-Running on Docker using PostgreSQL.
+Garagesale is a production ready RESTful API service running on docker. It is build without any framework to keep the service as light as possible.
 
 This is a product of my work while training for Go based web services.  
 The open source [training material](https://github.com/ardanlabs/service-training) is provided by [Ardan Labs](http://www.ardanlabs.com/).
