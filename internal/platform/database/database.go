@@ -7,17 +7,32 @@ import (
 	_ "github.com/lib/pq" // The drier being used
 )
 
+// Config struct holds the required database parameters
+type Config struct {
+	User       string
+	Password   string
+	Host       string
+	Name       string
+	DisableTLS bool
+}
+
 // Open workds as an abstraction to open a database conn
-func Open() (*sqlx.DB, error) {
+func Open(cfg Config) (*sqlx.DB, error) {
+
+	sslMode := "require"
+	if cfg.DisableTLS {
+		sslMode = "disable"
+	}
+
 	query := make(url.Values)
-	query.Set("sslmode", "disable")
+	query.Set("sslmode", sslMode)
 	query.Set("timezone", "utc")
 
 	url := url.URL{
 		Scheme:   "postgres",
-		User:     url.UserPassword("postgres", "postgres"),
-		Host:     "localhost",
-		Path:     "postgres",
+		User:     url.UserPassword(cfg.User, cfg.Password),
+		Host:     cfg.Host,
+		Path:     cfg.Name,
 		RawQuery: query.Encode(),
 	}
 
