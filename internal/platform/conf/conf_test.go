@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ardanlabs/garagesale/internal/platform/conf"
 	"github.com/google/go-cmp/cmp"
+	"github.com/sreejeet/garagesale/internal/platform/conf"
 )
 
 const (
