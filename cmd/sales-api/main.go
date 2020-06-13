@@ -25,11 +25,13 @@ func main() {
 			ShutdownTimeout time.Duration `conf:"default:5s"`
 		}
 		DB struct {
-			User       string `conf:"default:postgres"`
-			Password   string `conf:"default:postgres,noprint"`
-			Host       string `conf:"default:localhost"`
-			Name       string `conf:"default:postgres"`
-			DisableTLS bool   `conf:"default:false"`
+			User     string `conf:"default:postgres"`
+			Password string `conf:"default:postgres,noprint"`
+			Host     string `conf:"default:localhost"`
+			Name     string `conf:"default:postgres"`
+			// Always enable TLS on live systems
+			// Currently set to true for convenience
+			DisableTLS bool `conf:"default:true"`
 		}
 	}
 
