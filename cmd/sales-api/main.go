@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -9,21 +10,55 @@ import (
 	"syscall"
 	"time"
 
-	_ "github.com/lib/pq"
 	"github.com/sreejeet/garagesale/cmd/sales-api/internal/handlers"
+	"github.com/sreejeet/garagesale/internal/platform/conf"
 	"github.com/sreejeet/garagesale/internal/platform/database"
 )
 
 func main() {
 
+	var cfg struct {
+		Web struct {
+			Address         string        `conf:"default:localhost:8000"`
+			ReadTimeout     time.Duration `conf:"default:5s"`
+			WriteTimeout    time.Duration `conf:"default:5s"`
+			ShutdownTimeout time.Duration `conf:"default:5s"`
+		}
+		DB struct {
+			User       string `conf:"default:postgres"`
+			Password   string `conf:"default:postgres,noprint"`
+			Host       string `conf:"default:localhost"`
+			Name       string `conf:"default:postgres"`
+			DisableTLS bool   `conf:"default:false"`
+		}
+	}
+
 	const serveURL string = "localhost:8000"
+
+	if err := conf.Parse(os.Args[1:], "SALES", &cfg); err != nil {
+		if err == conf.ErrHelpWanted {
+			usage, err := conf.Usage("SALES", &cfg)
+			if err != nil {
+				log.Fatalf("error : generating config usage : %v", err)
+			}
+			fmt.Println(usage)
+			return
+		}
+		log.Fatalf("error: parsing config: %s", err)
+	}
 
 	// Basic logging
 	log.Printf("Started service")
 	defer log.Print("Ended service")
 
 	// Start database
-	db, err := database.Open()
+	db, err := database.Open(database.Config{
+		User:       cfg.DB.User,
+		Password:   cfg.DB.Password,
+		Host:       cfg.DB.Host,
+		Name:       cfg.DB.Name,
+		DisableTLS: cfg.DB.DisableTLS,
+	})
 	if err != nil {
 		log.Fatalf("Error opening database: %s\n", err)
 	}
@@ -58,7 +93,6 @@ func main() {
 	// Using the switch case construct, or in case of Go,
 	// the select construct to block main func till shutdown
 	select {
-
 	case err := <-serverErrors:
 		log.Fatalf("Error listening: %s\n", err)
 
@@ -79,6 +113,5 @@ func main() {
 		if err != nil {
 			log.Fatalf("Could not stop server gracefully : %v", err)
 		}
-
 	}
 }
