@@ -10,12 +10,20 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/sreejeet/garagesale/cmd/sales-api/internal/handlers"
 	"github.com/sreejeet/garagesale/internal/platform/conf"
 	"github.com/sreejeet/garagesale/internal/platform/database"
 )
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatalf("Error: %s\n", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
 
 	var cfg struct {
 		Web struct {
@@ -41,12 +49,12 @@ func main() {
 		if err == conf.ErrHelpWanted {
 			usage, err := conf.Usage("SALES", &cfg)
 			if err != nil {
-				log.Fatalf("error : generating config usage : %v", err)
+				return errors.Wrap(err, "generating usage")
 			}
 			fmt.Println(usage)
-			return
+			return nil
 		}
-		log.Fatalf("error: parsing config: %s", err)
+		return errors.Wrap(err, "parsing configuration")
 	}
 
 	// Basic logging
@@ -62,7 +70,7 @@ func main() {
 		DisableTLS: cfg.DB.DisableTLS,
 	})
 	if err != nil {
-		log.Fatalf("Error opening database: %s\n", err)
+		return errors.Wrap(err, "opening database")
 	}
 	defer db.Close()
 
@@ -96,7 +104,7 @@ func main() {
 	// the select construct to block main func till shutdown
 	select {
 	case err := <-serverErrors:
-		log.Fatalf("Error listening: %s\n", err)
+		return errors.Wrap(err, "serving")
 
 	case <-shutdown:
 		log.Printf("Shutting down service")
@@ -113,7 +121,7 @@ func main() {
 			err = api.Close()
 		}
 		if err != nil {
-			log.Fatalf("Could not stop server gracefully : %v", err)
+			return errors.Wrap(err, "failed stopping server gracefully")
 		}
 	}
 }
