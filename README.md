@@ -5,7 +5,7 @@
 
 # Production ready RESTful API service.
 
-Garagesale is a production ready RESTful API service running on docker. It is build without any framework to keep the service as light as possible.
+Garagesale is a production ready RESTful API service running on docker. It is build without any framework to keep the service as light as possible. The final product should resemble [The Ultimate Service](https://github.com/ardanlabs/service)
 
 This is a product of my work while training for Go based web services.  
 The open source [training material](https://github.com/ardanlabs/service-training) is provided by [Ardan Labs](http://www.ardanlabs.com/).
