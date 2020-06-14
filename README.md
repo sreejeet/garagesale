@@ -24,3 +24,4 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 6. [Docker logs](https://docs.docker.com/config/containers/logging/)
 7. [Package Oriented Design](https://www.ardanlabs.com/blog/2017/02/package-oriented-design.html)
 8. [Package conf](https://github.com/ardanlabs/service-training/blob/master/06-configuration/internal/platform/conf/README.md)
+9. [Error Handling in Go](https://medium.com/@hussachai/error-handling-in-go-a-quick-opinionated-guide-9199dd7c7f76)
