@@ -5,12 +5,20 @@ import (
 	"log"
 	"os"
 
+	"github.com/pkg/errors"
 	"github.com/sreejeet/garagesale/internal/platform/conf"
 	"github.com/sreejeet/garagesale/internal/platform/database"
 	"github.com/sreejeet/garagesale/internal/schema"
 )
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatalf("Error: %s\n", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
 
 	var cfg struct {
 		DB struct {
@@ -29,12 +37,12 @@ func main() {
 		if err == conf.ErrHelpWanted {
 			usage, err := conf.Usage("SALES", &cfg)
 			if err != nil {
-				log.Fatalf("Error generating usage for database: %s\n", err)
+				return errors.Wrap(err, "generating usage")
 			}
 			fmt.Println(usage)
-			return
+			return nil
 		}
-		log.Fatalf("Error parsing database configuration: %s\n", err)
+		return errors.Wrap(err, "parsing config")
 	}
 
 	// Open database connection for performing actions
@@ -46,7 +54,7 @@ func main() {
 		DisableTLS: cfg.DB.DisableTLS,
 	})
 	if err != nil {
-		log.Fatalf("error connecting to database: %s\n", err)
+		return errors.Wrap(err, "connecting to database")
 	}
 	defer db.Close()
 
@@ -55,20 +63,18 @@ func main() {
 	case "migrate":
 		// Migrate database schema
 		if err := schema.Migrate(db); err != nil {
-			log.Println("Error applying migrations", err)
-			os.Exit(1)
+			return errors.Wrap(err, "applying migrations")
 		}
 		log.Println("Completed migration")
-		return
+		return nil
 
 	case "seed":
 		// Seeding database
 		if err := schema.Seed(db); err != nil {
-			log.Println("Error seeding database", err)
-			os.Exit(1)
+			return errors.Wrap(err, "seeding database")
 		}
 		log.Println("Completed seeding database")
-		return
+		return nil
 	}
 
 }
