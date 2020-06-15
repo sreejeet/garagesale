@@ -76,5 +76,5 @@ func run() error {
 		log.Println("Completed seeding database")
 		return nil
 	}
-
+	return nil
 }
