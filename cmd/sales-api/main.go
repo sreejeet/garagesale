@@ -127,4 +127,6 @@ func run() error {
 			return errors.Wrap(err, "failed stopping server gracefully")
 		}
 	}
+
+	return nil
 }
