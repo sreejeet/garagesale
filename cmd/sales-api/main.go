@@ -77,12 +77,13 @@ func run() error {
 	}
 	defer db.Close()
 
-	productsHandler := handlers.Products{DB: db, Log: log}
+	// productsHandler := handlers.Products{DB: db, Log: log}
 
 	// Create api as a http.Server
 	api := http.Server{
-		Addr:         serveURL,
-		Handler:      http.HandlerFunc(productsHandler.List),
+		Addr: serveURL,
+		// Handler:      http.HandlerFunc(productsHandler.List),
+		Handler:      handlers.API(db, log),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}
