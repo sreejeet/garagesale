@@ -16,7 +16,7 @@ func List(db *sqlx.DB) ([]Product, error) {
 }
 
 // Retrieve is used to get a single product based on its ID from the URL parameter.
-func Retrieve(db *sqlx.DB) (*Product, error) {
+func Retrieve(db *sqlx.DB, id string) (*Product, error) {
 	var prod Product
 
 	const query = `SELECT * FROM products WHERE product_id = $1`
