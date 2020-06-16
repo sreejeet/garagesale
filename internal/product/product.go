@@ -17,11 +17,11 @@ func List(db *sqlx.DB) ([]Product, error) {
 
 // Retrieve is used to get a single product based on its ID from the URL parameter.
 func Retrieve(db *sqlx.DB) (*Product, error) {
-	var p Product
+	var prod Product
 
 	const query = `SELECT * FROM products WHERE product_id = $1`
-	if err := db.Get(&p, query); err != nil {
+	if err := db.Get(&prod, query); err != nil {
 		return nil, errors.Wrap(err, "selecting one product")
 	}
-	return &p, nil
+	return &prod, nil
 }
