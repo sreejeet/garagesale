@@ -1,4 +1,5 @@
-<img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/sreejeet/garagesale">&nbsp;<img src="https://goreportcard.com/badge/github.com/sreejeet/garagesale">&nbsp;<img src="https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg">
+<img alt="GitHub go.mod Go version" src="https://img.shields.io/github/go-mod/go-version/sreejeet/garagesale">&nbsp;<img src="https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg">
+[![Go Report Card](https://goreportcard.com/badge/github.com/sreejeet/garagesale)](https://goreportcard.com/report/github.com/sreejeet/garagesale)
 
 ### (Work in progress)
 <img alt="Image" src="https://i.imgur.com/5K6jBOC.png">
