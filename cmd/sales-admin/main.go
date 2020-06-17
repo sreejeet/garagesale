@@ -65,7 +65,6 @@ func run() error {
 			return errors.Wrap(err, "applying migrations")
 		}
 		log.Println("Completed migration")
-		return nil
 
 	case "seed":
 		// Seeding database
@@ -73,7 +72,9 @@ func run() error {
 			return errors.Wrap(err, "seeding database")
 		}
 		log.Println("Completed seeding database")
-		return nil
+
+	default:
+		log.Println("Please specify operation to perform")
 	}
 
 	return nil
