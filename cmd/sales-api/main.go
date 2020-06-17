@@ -92,7 +92,7 @@ func run() error {
 
 	// Here we start the server for the (micro)service
 	go func() {
-		log.Printf("Server started at %s\n", serveURL)
+		log.Printf("Server started at %s\n", cfg.Web.Address)
 		serverErrors <- api.ListenAndServe()
 	}()
 
@@ -111,14 +111,13 @@ func run() error {
 		log.Printf("Shutting down service")
 
 		// Deadline for finishing any outstanding requests
-		const timeout = 5 * time.Second
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)
 		defer cancel()
 
 		// Asking listener to shut down
 		err := api.Shutdown(ctx)
 		if err != nil {
-			log.Printf("Could not gracefully shut down server in %v : %v", timeout, err)
+			log.Printf("Could not gracefully shut down server in %v : %v", cfg.Web.ShutdownTimeout, err)
 			err = api.Close()
 		}
 		if err != nil {
