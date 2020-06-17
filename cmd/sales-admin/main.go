@@ -14,7 +14,6 @@ import (
 func main() {
 	if err := run(); err != nil {
 		log.Fatalf("Error: %s\n", err)
-		os.Exit(1)
 	}
 }
 
