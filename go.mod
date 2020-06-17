@@ -8,6 +8,7 @@ require (
 	github.com/cznic/ql v1.2.0 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/google/go-cmp v0.4.1
+	github.com/google/uuid v1.1.1
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.7.0
 	github.com/pkg/errors v0.9.1
