@@ -46,8 +46,6 @@ func run() error {
 		}
 	}
 
-	const serveURL string = "localhost:8000"
-
 	if err := conf.Parse(os.Args[1:], "SALES", &cfg); err != nil {
 		if err == conf.ErrHelpWanted {
 			usage, err := conf.Usage("SALES", &cfg)
@@ -81,8 +79,7 @@ func run() error {
 
 	// Create api as a http.Server
 	api := http.Server{
-		Addr: serveURL,
-		// Handler:      http.HandlerFunc(productsHandler.List),
+		Addr:         cfg.Web.Address,
 		Handler:      handlers.API(db, log),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
