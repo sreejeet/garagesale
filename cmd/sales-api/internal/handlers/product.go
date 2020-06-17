@@ -29,7 +29,7 @@ func (p *Products) List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Marshalling (converting) product slice to json string
-	data, err := json.Marshal(list)
+	data, err := json.MarshalIndent(list, "", "    ")
 	if err != nil {
 		p.log.Println("Error parsing json:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -55,7 +55,7 @@ func (p *Products) Retrieve(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Marshalling (converting) product slice to json string
-	data, err := json.Marshal(prod)
+	data, err := json.MarshalIndent(prod, "", "    ")
 	if err != nil {
 		p.log.Println("Error parsing json:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -90,7 +90,7 @@ func (p *Products) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := json.Marshal(prod)
+	data, err := json.MarshalIndent(prod, "", "    ")
 	if err != nil {
 		p.log.Println("Error marshalling result:", err)
 		w.WriteHeader(http.StatusInternalServerError)
