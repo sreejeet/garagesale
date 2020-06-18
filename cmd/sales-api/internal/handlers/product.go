@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/jmoiron/sqlx"
+	"github.com/sreejeet/garagesale/internal/platform/web"
 	"github.com/sreejeet/garagesale/internal/product"
 )
 
@@ -28,17 +28,9 @@ func (p *Products) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Marshalling (converting) product slice to json string
-	data, err := json.MarshalIndent(list, "", "    ")
-	if err != nil {
-		p.log.Println("Error parsing json:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	if _, err := w.Write(data); err != nil {
-		p.log.Println("Error writing json:", err)
+	// Using the web.Respond helper to return json
+	if err := web.Respond(w, list, http.StatusOK); err != nil {
+		p.log.Println("Error responding to request:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -54,17 +46,9 @@ func (p *Products) Retrieve(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Marshalling (converting) product slice to json string
-	data, err := json.MarshalIndent(prod, "", "    ")
-	if err != nil {
-		p.log.Println("Error parsing json:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	if _, err := w.Write(data); err != nil {
-		p.log.Println("Error writing json:", err)
+	// Using the web.Respond helper to return json
+	if err := web.Respond(w, prod, http.StatusOK); err != nil {
+		p.log.Println("Error responding to request:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -77,8 +61,8 @@ func (p *Products) Create(w http.ResponseWriter, r *http.Request) {
 	var newProd product.NewProduct
 
 	// Decoding response body to NewProduct struct
-	if err := json.NewDecoder(r.Body).Decode(&newProd); err != nil {
-		p.log.Println("Error decoding response:", err)
+	if err := web.Decode(r, &newProd); err != nil {
+		p.log.Println("Error decoding product:", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -90,16 +74,9 @@ func (p *Products) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := json.MarshalIndent(prod, "", "    ")
-	if err != nil {
-		p.log.Println("Error marshalling result:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	if _, err := w.Write(data); err != nil {
-		p.log.Println("Error writing json:", err)
+	// Using the web.Respond helper to return json
+	if err := web.Respond(w, &prod, http.StatusOK); err != nil {
+		p.log.Println("Error responding to request:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
