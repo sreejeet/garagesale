@@ -28,3 +28,4 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 9. [Error Handling in Go](https://medium.com/@hussachai/error-handling-in-go-a-quick-opinionated-guide-9199dd7c7f76)
 10. [Package initialization and program execution order](https://yourbasic.org/golang/package-init-function-main-execution-order/)
 11. [How to collect, standardize, and centralize Golang logs](https://www.datadoghq.com/blog/go-logging/)
+12. [Error handling and Go](https://blog.golang.org/error-handling-and-go)
