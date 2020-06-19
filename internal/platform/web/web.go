@@ -7,6 +7,9 @@ import (
 	"github.com/go-chi/chi"
 )
 
+// Handler is the func signature used by all handlers in this service
+type Handler func(http.ResponseWriter, *http.Request) error
+
 // App will be the entry point to our REST API.
 // It will control the context of each request.
 type App struct {
@@ -23,8 +26,21 @@ func NewApp(log *log.Logger) *App {
 }
 
 // Handle associates a handlerfunc with an HTTP method and URL pattern.
-func (a *App) Handle(method, url string, h http.HandlerFunc) {
-	a.mux.MethodFunc(method, url, h)
+// This converts our custom handler to the standard lib Handler type.
+// It captures errors and returns them to the client in a consistent manner.
+func (a *App) Handle(method, url string, h Handler) {
+
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		err := h(w, r)
+		if err != nil {
+			res := ErrorResponse{
+				Error: err.Error(),
+			}
+			Respond(w, res, http.StatusInternalServerError)
+		}
+	}
+
+	a.mux.MethodFunc(method, url, fn)
 }
 
 // ServeHTTP implements the http.Handler interface
