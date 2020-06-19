@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"github.com/sreejeet/garagesale/internal/platform/web"
 	"github.com/sreejeet/garagesale/internal/product"
 )
@@ -20,63 +21,48 @@ type Products struct {
 
 // List is an http handler for returning
 // a json list of products.
-func (p *Products) List(w http.ResponseWriter, r *http.Request) {
+func (p *Products) List(w http.ResponseWriter, r *http.Request) error {
+
 	list, err := product.List(p.db)
 	if err != nil {
-		p.log.Println("Error listing products:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return errors.Wrap(err, "Error listing products")
 	}
 
 	// Using the web.Respond helper to return json
-	if err := web.Respond(w, list, http.StatusOK); err != nil {
-		p.log.Println("Error responding to request:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	return web.Respond(w, list, http.StatusOK)
 }
 
 // Retrieve is used to get a single product based on its ID from the URL parameter.
-func (p *Products) Retrieve(w http.ResponseWriter, r *http.Request) {
+func (p *Products) Retrieve(w http.ResponseWriter, r *http.Request) error {
 
 	id := chi.URLParam(r, "id")
 	prod, err := product.Retrieve(p.db, id)
 	if err != nil {
-		p.log.Println("error finding product:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return errors.Wrap(err, "Error finding product")
 	}
 
 	// Using the web.Respond helper to return json
-	if err := web.Respond(w, prod, http.StatusOK); err != nil {
-		p.log.Println("Error responding to request:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	return web.Respond(w, prod, http.StatusOK)
 }
 
 // Create is used to create a new product from the body of a request.
 // The created product is sent back to the client
 // in conformance to the RESTful architecture.
-func (p *Products) Create(w http.ResponseWriter, r *http.Request) {
+func (p *Products) Create(w http.ResponseWriter, r *http.Request) error {
 
 	var newProd product.NewProduct
 
 	// Decoding response body to NewProduct struct
 	if err := web.Decode(r, &newProd); err != nil {
-		p.log.Println("Error decoding product:", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		return errors.Wrap(err, "Error decoding product")
 	}
 
+	// Creating product in database
 	prod, err := product.Create(p.db, newProd, time.Now())
 	if err != nil {
-		p.log.Println("Error creating product:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return errors.Wrap(err, "Error creating product")
 	}
 
 	// Using the web.Respond helper to return json
-	if err := web.Respond(w, &prod, http.StatusOK); err != nil {
-		p.log.Println("Error responding to request:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	return web.Respond(w, &prod, http.StatusOK)
 }
