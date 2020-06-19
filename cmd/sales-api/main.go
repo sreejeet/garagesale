@@ -81,8 +81,8 @@ func run() error {
 	api := http.Server{
 		Addr:         cfg.Web.Address,
 		Handler:      handlers.API(db, log),
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
+		ReadTimeout:  cfg.Web.ReadTimeout,
+		WriteTimeout: cfg.Web.WriteTimeout,
 	}
 
 	// A channel to listen for errors from the server.
