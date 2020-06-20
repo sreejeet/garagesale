@@ -38,10 +38,9 @@ func (a *App) Handle(method, url string, h Handler) {
 			a.log.Printf("Error: %v+", err)
 
 			// Respond with the error to the client
-			if err := RespondError(w, err) err !=nil{
+			if err := RespondError(w, err); err != nil {
 				a.log.Printf("Error: %v+", err)
 			}
-			Respond(w, res, http.StatusInternalServerError)
 		}
 	}
 
