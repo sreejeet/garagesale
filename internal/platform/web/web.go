@@ -33,8 +33,13 @@ func (a *App) Handle(method, url string, h Handler) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		err := h(w, r)
 		if err != nil {
-			res := ErrorResponse{
-				Error: err.Error(),
+
+			// Logging to our logs
+			a.log.Printf("Error: %v+", err)
+
+			// Respond with the error to the client
+			if err := RespondError(w, err) err !=nil{
+				a.log.Printf("Error: %v+", err)
 			}
 			Respond(w, res, http.StatusInternalServerError)
 		}
