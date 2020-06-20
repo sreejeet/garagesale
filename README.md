@@ -29,3 +29,4 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 10. [Package initialization and program execution order](https://yourbasic.org/golang/package-init-function-main-execution-order/)
 11. [How to collect, standardize, and centralize Golang logs](https://www.datadoghq.com/blog/go-logging/)
 12. [Error handling and Go](https://blog.golang.org/error-handling-and-go)
+13. [Structs and Interfaces](https://www.golang-book.com/books/intro/9) (This is part of a book from 2012. Outdated, but a good read nonetheless.)
