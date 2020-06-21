@@ -38,7 +38,14 @@ func (p *Products) Retrieve(w http.ResponseWriter, r *http.Request) error {
 	id := chi.URLParam(r, "id")
 	prod, err := product.Retrieve(p.db, id)
 	if err != nil {
-		return errors.Wrap(err, "Error finding product")
+		switch err {
+		case product.ErrInvalidID:
+			return web.NewRequestError(err, http.StatusBadRequest)
+		case product.ErrNotFound:
+			return web.NewRequestError(err, http.StatusNotFound)
+		default:
+			return errors.Wrap(err, "Error finding product")
+		}
 	}
 
 	// Using the web.Respond helper to return json
