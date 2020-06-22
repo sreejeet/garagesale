@@ -92,7 +92,7 @@ func run() error {
 
 	// Here we start the server for the (micro)service
 	go func() {
-		log.Printf("Server started at %s\n", cfg.Web.Address)
+		log.Printf("Server started at %s\n", api.Addr)
 		serverErrors <- api.ListenAndServe()
 	}()
 
