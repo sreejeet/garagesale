@@ -42,8 +42,8 @@ func StartContainer(t *testing.T) *Container {
 		NetworkSettings struct {
 			Port struct {
 				TCP5432 []struct {
-					HostIP   string `json:'HostIp'`
-					HostPort string `json:'HostPort'`
+					HostIP   string `json:"HostIp"`
+					HostPort string `json:"HostPort"`
 				} `json:"5432/tcp"`
 			} `json:"Ports"`
 		} `json:"NetworkSettings"`
