@@ -33,7 +33,7 @@ func NewUnit(t *testing.T) (*sqlx.DB, func()) {
 	// We will ping the database every 100ms till we dont get an error.
 	t.Log("Waiting for database to be ready")
 	var pingError error
-	maxAttempts := 20
+	maxAttempts := 100
 	for attempts := 1; attempts <= maxAttempts; attempts++ {
 		pingError = db.Ping()
 		if pingError == nil {
@@ -46,7 +46,7 @@ func NewUnit(t *testing.T) (*sqlx.DB, func()) {
 	if pingError != nil {
 		databasetest.DumpContainerLogs(t, c)
 		databasetest.StopContainer(t, c)
-		t.Fatalf("Failed starting database: %s", pingError)
+		t.Fatalf("Failed starting database after %d seconds: %s", maxAttempts/10, pingError)
 	}
 
 	// Perform schema migration
