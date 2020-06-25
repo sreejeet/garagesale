@@ -2,10 +2,12 @@ package tests
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -81,5 +83,75 @@ func (p *ProductTests) List(t *testing.T) {
 	// Check if the API response and expected results are the same or not.
 	if diff := cmp.Diff(want, list); diff != "" {
 		t.Fatalf("Response did not match expected. Diff:\n%s", diff)
+	}
+}
+
+// ProductCRUD test will be used to perform all CRUD operations of the API
+func (p *ProductTests) ProductCRUD(t *testing.T) {
+
+	var created map[string]interface{}
+
+	{ // CREATE
+		body := strings.NewReader(`{"name":"product0","cost":55,"quantity":6}`)
+
+		req := httptest.NewRequest("POST", "/v1/products", body)
+		req.Header.Set("Content-Type", "application/json")
+		resp := httptest.NewRecorder()
+
+		p.app.ServeHTTP(resp, req)
+
+		if resp.Code != http.StatusCreated {
+			t.Fatalf("Posting: expected status code %v, got %v", http.StatusCreated, resp.Code)
+		}
+
+		if err := json.NewDecoder(resp.Body).Decode(&created); err != nil {
+			t.Fatalf("Decoding: %s", err)
+		}
+
+		if created["id"] == "" || created["id"] == nil {
+			t.Fatal("Expected non-empty product id")
+		}
+		if created["date_created"] == "" || created["date_created"] == nil {
+			t.Fatal("Expected non-empty product date_created")
+		}
+		if created["date_updated"] == "" || created["date_updated"] == nil {
+			t.Fatal("Expected non-empty product date_updated")
+		}
+
+		want := map[string]interface{}{
+			"id":           created["id"],
+			"date_created": created["date_created"],
+			"date_updated": created["date_updated"],
+			"name":         "product0",
+			"cost":         float64(55),
+			"quantity":     float64(6),
+		}
+
+		if diff := cmp.Diff(want, created); diff != "" {
+			t.Fatalf("Response did not match expected. Diff:\n%s", diff)
+		}
+	}
+
+	{ // READ
+		url := fmt.Sprintf("/v1/products/%s", created["id"])
+		req := httptest.NewRequest("GET", url, nil)
+		req.Header.Set("Content-Type", "application/json")
+		resp := httptest.NewRecorder()
+
+		p.app.ServeHTTP(resp, req)
+
+		if http.StatusOK != resp.Code {
+			t.Fatalf("Retrieving: expected status code %v, got %v", http.StatusOK, resp.Code)
+		}
+
+		var fetched map[string]interface{}
+		if err := json.NewDecoder(resp.Body).Decode(&fetched); err != nil {
+			t.Fatalf("Decoding: %s", err)
+		}
+
+		// Fetched product should match the one we created.
+		if diff := cmp.Diff(created, fetched); diff != "" {
+			t.Fatalf("Retrieved product should match created. Diff:\n%s", diff)
+		}
 	}
 }
