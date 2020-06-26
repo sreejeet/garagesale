@@ -1,6 +1,7 @@
 package product_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -20,13 +21,14 @@ func TestProducts(t *testing.T) {
 		Quantity: 1,
 	}
 	now := time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC)
+	ctx := context.Background()
 
-	p0, err := product.Create(db, newP, now)
+	p0, err := product.Create(ctx, db, newP, now)
 	if err != nil {
 		t.Fatalf("Creating product: %s", err)
 	}
 
-	p1, err := product.Retrieve(db, p0.ID)
+	p1, err := product.Retrieve(ctx, db, p0.ID)
 	if err != nil {
 		t.Fatalf("Getting product: %s", err)
 	}
@@ -44,7 +46,7 @@ func TestProductList(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	ps, err := product.List(db)
+	ps, err := product.List(context.Background(), db)
 	if err != nil {
 		t.Fatalf("Listing products: %s", err)
 	}
