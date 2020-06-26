@@ -23,7 +23,7 @@ type Products struct {
 // a json list of products.
 func (p *Products) List(w http.ResponseWriter, r *http.Request) error {
 
-	list, err := product.List(p.db)
+	list, err := product.List(r.Context(), p.db)
 	if err != nil {
 		return errors.Wrap(err, "Error listing products")
 	}
@@ -36,7 +36,7 @@ func (p *Products) List(w http.ResponseWriter, r *http.Request) error {
 func (p *Products) Retrieve(w http.ResponseWriter, r *http.Request) error {
 
 	id := chi.URLParam(r, "id")
-	prod, err := product.Retrieve(p.db, id)
+	prod, err := product.Retrieve(r.Context(), p.db, id)
 	if err != nil {
 		switch err {
 		case product.ErrInvalidID:
@@ -65,7 +65,7 @@ func (p *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	// Creating product in database
-	prod, err := product.Create(p.db, newProd, time.Now())
+	prod, err := product.Create(r.Context(), p.db, newProd, time.Now())
 	if err != nil {
 		return errors.Wrap(err, "Error creating product")
 	}
