@@ -17,6 +17,7 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 3. [PostgreSQL](https://www.postgresql.org/)
 
 ## A consolidated list of resources I found useful.
+(Please raise an issue if you find any broken link)
 1. [The complete guide to Go net/http timeouts](https://blog.cloudflare.com/the-complete-guide-to-golang-net-http-timeouts/)
 2. [So you want to expose Go on the Internet](https://blog.cloudflare.com/exposing-go-on-the-internet/)
 3. [Parsing JSON files With Golang](https://tutorialedge.net/golang/parsing-json-with-golang/)
@@ -30,3 +31,5 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 11. [How to collect, standardize, and centralize Golang logs](https://www.datadoghq.com/blog/go-logging/)
 12. [Error handling and Go](https://blog.golang.org/error-handling-and-go)
 13. [Structs and Interfaces](https://www.golang-book.com/books/intro/9) (This is part of a book from 2012. Outdated, but a good read nonetheless.)
+14. [Understanding the context package in golang](http://p.agnihotry.com/post/understanding_the_context_package_in_golang/)
+15. [Go: Context and Cancellation by Propagation](https://medium.com/a-journey-with-go/go-context-and-cancellation-by-propagation-7a808bbc889c)
