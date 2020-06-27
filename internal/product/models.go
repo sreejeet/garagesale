@@ -18,3 +18,20 @@ type NewProduct struct {
 	Cost     int    `json:"cost"`
 	Quantity int    `json:"quantity"`
 }
+
+// Sale type denotes a single sale transaction of a product.
+// Quantity is the number of items of a product were sold in this transaction.
+// Paid is the cumulative amount that was paid for this transaction
+type Sale struct {
+	ID          string    `db:"sale_id" json:"id"`
+	ProductID   string    `db:"product_id" json:"product_id"`
+	Quantity    int       `db:"quantity" json:"quantity"`
+	Paid        int       `db:"paid" json:"paid"`
+	DateCreated time.Time `db:"date_created" json:"date_created"`
+}
+
+// NewSale is the form for recording a transaction.
+type NewSale struct {
+	Quantity int `json:"quantity"`
+	Paid     int `json:"paid"`
+}
