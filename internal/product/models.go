@@ -8,6 +8,8 @@ type Product struct {
 	Name        string    `db:"name" json:"name"`
 	Cost        int       `db:"cost" json:"cost"`
 	Quantity    int       `db:"quantity" json:"quantity"`
+	Sold        int       `db:"sold" json:"sold"`
+	Revenue     int       `db:"revenue" json:"revenue"`
 	DateCreated time.Time `db:"date_created" json:"date_created"`
 	DateUpdated time.Time `db:"date_updated" json:"date_updated"`
 }
