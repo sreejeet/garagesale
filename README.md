@@ -34,3 +34,4 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 14. [Understanding the context package in golang](http://p.agnihotry.com/post/understanding_the_context_package_in_golang/)
 15. [Go: Context and Cancellation by Propagation](https://medium.com/a-journey-with-go/go-context-and-cancellation-by-propagation-7a808bbc889c)
 16. [PostgreSQL Joins](https://www.postgresqltutorial.com/postgresql-joins/)
+17. [PostgreSQL SUM Function](https://www.postgresqltutorial.com/postgresql-sum-function/)
