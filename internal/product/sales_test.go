@@ -2,13 +2,14 @@ package product
 
 import (
 	"context"
+	"testing"
 	"time"
 
 	"github.com/sreejeet/garagesale/internal/product"
 	"github.com/sreejeet/garagesale/internal/tests"
 )
 
-func TestSales(t *Testing.T) {
+func TestSales(t *testing.T) {
 
 	db, teardown := tests.NewUnit(t)
 	defer teardown()
