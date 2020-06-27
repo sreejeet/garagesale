@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// AddSale records a single sale transaction for a product type.
+// AddSale records a single sale transaction for a product.
 func AddSale(ctx context.Context, db *sqlx.DB, ns NewSale, productID string, now time.Time) (*Sale, error) {
 	s := Sale{
 		ID:          uuid.New().String(),
@@ -28,8 +28,20 @@ func AddSale(ctx context.Context, db *sqlx.DB, ns NewSale, productID string, now
 		s.Paid, s.DateCreated,
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "inserting sale")
+		return nil, errors.Wrap(err, "creating sale")
 	}
 
 	return &s, nil
+}
+
+// ListSales lists all sale transactions for a product.
+func ListSales(ctx context.Context, db *sqlx.DB, productID string) ([]Sale, error) {
+	sales := []Sale{}
+
+	const q = `SELECT * FROM sales WHERE product_id = $1`
+	if err := db.SelectContext(ctx, &sales, q, productID); err != nil {
+		return nil, errors.Wrap(err, "listing sales")
+	}
+
+	return sales, nil
 }
