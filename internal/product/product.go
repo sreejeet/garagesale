@@ -13,16 +13,22 @@ import (
 // Custom errors for expected failing conditions
 var (
 	// Invalid UUID
-	ErrInvalidID = errors.New("invalid ID!")
+	ErrInvalidID = errors.New("invalid ID")
 	// Unable to find product based on UUID
-	ErrNotFound = errors.New("product not found!")
+	ErrNotFound = errors.New("product not found")
 )
 
 // List retrieves all products from the database
 func List(ctx context.Context, db *sqlx.DB) ([]Product, error) {
 
 	products := []Product{}
-	const query = `SELECT * FROM products`
+	const query = `SELECT
+						p.*,
+						COALESCE(SUM(s.quantity), 0) AS sold,
+						COALESCE(SUM(s.paid), 0) AS revenue
+					FROM products AS p
+					LEFT JOIN sales AS s ON p.product_id = s.product_id
+					GROUP BY p.product_id`
 
 	if err := db.SelectContext(ctx, &products, query); err != nil {
 		return nil, errors.Wrap(err, "selecting products")
@@ -41,7 +47,15 @@ func Retrieve(ctx context.Context, db *sqlx.DB, id string) (*Product, error) {
 
 	var prod Product
 
-	const query = `SELECT * FROM products WHERE product_id = $1`
+	const query = `SELECT
+						p.*,
+						COALESCE(SUM(s.quantity), 0) AS sold,
+						COALESCE(SUM(s.paid), 0) AS revenue
+					FROM products AS p
+					LEFT JOIN sales AS s ON p.product_id = s.product_id
+					WHERE p.product_id = $1
+					GROUP BY p.product_id`
+
 	if err := db.GetContext(ctx, &prod, query, id); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrNotFound
