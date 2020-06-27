@@ -33,3 +33,4 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 13. [Structs and Interfaces](https://www.golang-book.com/books/intro/9) (This is part of a book from 2012. Outdated, but a good read nonetheless.)
 14. [Understanding the context package in golang](http://p.agnihotry.com/post/understanding_the_context_package_in_golang/)
 15. [Go: Context and Cancellation by Propagation](https://medium.com/a-journey-with-go/go-context-and-cancellation-by-propagation-7a808bbc889c)
+16. [PostgreSQL Joins](https://www.postgresqltutorial.com/postgresql-joins/)
