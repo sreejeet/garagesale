@@ -71,7 +71,7 @@ func (p *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	// Using the web.Respond helper to return json
-	return web.Respond(w, &prod, http.StatusOK)
+	return web.Respond(w, &prod, http.StatusCreated)
 }
 
 // AddSale records a new sale transaction for a specific product.
