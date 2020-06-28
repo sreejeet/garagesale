@@ -50,13 +50,13 @@ func (p *ProductTests) List(t *testing.T) {
 	p.app.ServeHTTP(resp, req)
 
 	if resp.Code != http.StatusOK {
-		t.Fatalf("Expected http status code %v, got %v", http.StatusOK, resp.Code)
+		t.Fatalf("expected http status code %v, got %v", http.StatusOK, resp.Code)
 	}
 
 	// Using a slice of empty interface to decode the response.
 	var list []map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
-		t.Fatalf("Decoding list of products: %s", err)
+		t.Fatalf("decoding list of products: %s", err)
 	}
 
 	// The exprected list of products.
@@ -67,6 +67,8 @@ func (p *ProductTests) List(t *testing.T) {
 			"name":         "Comic Books",
 			"cost":         float64(50),
 			"quantity":     float64(42),
+			"revenue":      float64(350),
+			"sold":         float64(7),
 			"date_created": "2019-01-01T00:00:01.000001Z",
 			"date_updated": "2019-01-01T00:00:01.000001Z",
 		},
@@ -75,6 +77,8 @@ func (p *ProductTests) List(t *testing.T) {
 			"name":         "McDonalds Toys",
 			"cost":         float64(75),
 			"quantity":     float64(120),
+			"revenue":      float64(225),
+			"sold":         float64(3),
 			"date_created": "2019-01-01T00:00:02.000001Z",
 			"date_updated": "2019-01-01T00:00:02.000001Z",
 		},
@@ -82,7 +86,7 @@ func (p *ProductTests) List(t *testing.T) {
 
 	// Check if the API response and expected results are the same or not.
 	if diff := cmp.Diff(want, list); diff != "" {
-		t.Fatalf("Response did not match expected. Diff:\n%s", diff)
+		t.Fatalf("response did not match expected. Diff:\n%s", diff)
 	}
 }
 
@@ -101,21 +105,21 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 		p.app.ServeHTTP(resp, req)
 
 		if resp.Code != http.StatusCreated {
-			t.Fatalf("Posting: expected status code %v, got %v", http.StatusCreated, resp.Code)
+			t.Fatalf("posting: expected status code %v, got %v", http.StatusCreated, resp.Code)
 		}
 
 		if err := json.NewDecoder(resp.Body).Decode(&created); err != nil {
-			t.Fatalf("Decoding: %s", err)
+			t.Fatalf("decoding: %s", err)
 		}
 
 		if created["id"] == "" || created["id"] == nil {
-			t.Fatal("Expected non-empty product id")
+			t.Fatal("expected non-empty product id")
 		}
 		if created["date_created"] == "" || created["date_created"] == nil {
-			t.Fatal("Expected non-empty product date_created")
+			t.Fatal("expected non-empty product date_created")
 		}
 		if created["date_updated"] == "" || created["date_updated"] == nil {
-			t.Fatal("Expected non-empty product date_updated")
+			t.Fatal("expected non-empty product date_updated")
 		}
 
 		want := map[string]interface{}{
@@ -125,10 +129,12 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 			"name":         "product0",
 			"cost":         float64(55),
 			"quantity":     float64(6),
+			"sold":         float64(0),
+			"revenue":      float64(0),
 		}
 
 		if diff := cmp.Diff(want, created); diff != "" {
-			t.Fatalf("Response did not match expected. Diff:\n%s", diff)
+			t.Fatalf("response did not match expected. Diff:\n%s", diff)
 		}
 	}
 
@@ -141,17 +147,17 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 		p.app.ServeHTTP(resp, req)
 
 		if http.StatusOK != resp.Code {
-			t.Fatalf("Retrieving: expected status code %v, got %v", http.StatusOK, resp.Code)
+			t.Fatalf("retrieving: expected status code %v, got %v", http.StatusOK, resp.Code)
 		}
 
 		var fetched map[string]interface{}
 		if err := json.NewDecoder(resp.Body).Decode(&fetched); err != nil {
-			t.Fatalf("Decoding: %s", err)
+			t.Fatalf("decoding: %s", err)
 		}
 
 		// Fetched product should match the one we created.
 		if diff := cmp.Diff(created, fetched); diff != "" {
-			t.Fatalf("Retrieved product should match created. Diff:\n%s", diff)
+			t.Fatalf("retrievedd product should match created. Diff:\n%s", diff)
 		}
 	}
 }
