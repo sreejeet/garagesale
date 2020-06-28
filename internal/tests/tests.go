@@ -33,7 +33,7 @@ func NewUnit(t *testing.T) (*sqlx.DB, func()) {
 	// We will ping the database every 100ms till we dont get an error.
 	t.Log("Waiting for database to be ready")
 	var pingError error
-	maxAttempts := 100
+	maxAttempts := 300
 	for attempts := 1; attempts <= maxAttempts; attempts++ {
 		pingError = db.Ping()
 		if pingError == nil {
