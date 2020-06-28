@@ -26,7 +26,6 @@ func Respond(w http.ResponseWriter, data interface{}, statusCode int) error {
 }
 
 // RespondError is used to send error responses to the client.
-
 func RespondError(w http.ResponseWriter, err error) error {
 
 	// Check if type is of *Error, that means it was an expected error
