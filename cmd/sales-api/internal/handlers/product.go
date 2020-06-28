@@ -73,3 +73,21 @@ func (p *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	// Using the web.Respond helper to return json
 	return web.Respond(w, &prod, http.StatusOK)
 }
+
+// AddSake records a new sale transaction for a specific product.
+// It takes a NewSale object in json from and returns the added record to the caller.
+func (p *Products) AddSale(w http.ResponseWriter, r *http.Request) error {
+	var ns product.NewSale
+	if err := web.Decode(r, &ns); err != nil {
+		return errors.Wrap(err, "decoding new sale")
+	}
+
+	productID := chi.URLParam(r, "id")
+
+	sale, err := product.AddSale(r.Context(), p.db, ns, productID, time.Now())
+	if err != nil {
+		return errors.Wrap(err, "adding new sale")
+	}
+
+	return web.Respond(w, sale, http.StatusCreated)
+}
