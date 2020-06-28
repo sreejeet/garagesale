@@ -74,7 +74,7 @@ func (p *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	return web.Respond(w, &prod, http.StatusOK)
 }
 
-// AddSake records a new sale transaction for a specific product.
+// AddSale records a new sale transaction for a specific product.
 // It takes a NewSale object in json from and returns the added record to the caller.
 func (p *Products) AddSale(w http.ResponseWriter, r *http.Request) error {
 	var ns product.NewSale
@@ -90,4 +90,16 @@ func (p *Products) AddSale(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	return web.Respond(w, sale, http.StatusCreated)
+}
+
+// ListSales lists all sales for a specific product.
+func (p *Products) ListSales(w http.ResponseWriter, r *http.Request) error {
+	id := chi.URLParam(r, "id")
+
+	list, err := product.ListSales(r.Context(), p.db, id)
+	if err != nil {
+		return errors.Wrap(err, "getting sales list")
+	}
+
+	return web.Respond(w, list, http.StatusOK)
 }
