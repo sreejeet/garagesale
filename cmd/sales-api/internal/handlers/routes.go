@@ -18,9 +18,14 @@ func API(db *sqlx.DB, log *log.Logger) http.Handler {
 		log: log,
 	}
 
+	// Product specific routes
 	app.Handle(http.MethodGet, "/v1/products", p.List)
 	app.Handle(http.MethodGet, "/v1/products/{id}", p.Retrieve)
 	app.Handle(http.MethodPost, "/v1/products", p.Create)
+
+	// Sale specific routes
+	app.Handle(http.MethodPost, "/v1/products/{id}/sales", p.AddSale)
+	app.Handle(http.MethodGet, "/v1/products/{id}/sales", p.ListSales)
 
 	return app
 }
