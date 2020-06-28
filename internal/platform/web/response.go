@@ -17,6 +17,7 @@ func Respond(w http.ResponseWriter, data interface{}, statusCode int) error {
 	}
 
 	w.Header().Set("Content_Type", "application/json; charset=utf-8")
+	w.WriteHeader(statusCode)
 	if _, err := w.Write(res); err != nil {
 		return err
 	}
