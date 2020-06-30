@@ -16,9 +16,9 @@ type Product struct {
 
 // NewProduct type is expected from clients when creating a product.
 type NewProduct struct {
-	Name     string `json:"name"`
-	Cost     int    `json:"cost"`
-	Quantity int    `json:"quantity"`
+	Name     string `json:"name" validate:"required"`
+	Cost     int    `json:"cost" validate:"gte=0"`
+	Quantity int    `json:"quantity" validate:"gte=1"`
 }
 
 // Sale type denotes a single sale transaction of a product.
@@ -27,8 +27,8 @@ type NewProduct struct {
 type Sale struct {
 	ID          string    `db:"sale_id" json:"id"`
 	ProductID   string    `db:"product_id" json:"product_id"`
-	Quantity    int       `db:"quantity" json:"quantity"`
-	Paid        int       `db:"paid" json:"paid"`
+	Quantity    int       `db:"quantity" json:"quantity" validate:"gte=0"`
+	Paid        int       `db:"paid" json:"paid" validate:"gte=0"`
 	DateCreated time.Time `db:"date_created" json:"date_created"`
 }
 
