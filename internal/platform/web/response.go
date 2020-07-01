@@ -32,7 +32,8 @@ func RespondError(w http.ResponseWriter, err error) error {
 	// and it may contain a specific error code that must be used instead of 500.
 	if webErr, ok := errors.Cause(err).(*Error); ok {
 		er := ErrorResponse{
-			Error: webErr.Err.Error(),
+			Error:  webErr.Err.Error(),
+			Fields: webErr.Fields,
 		}
 		if err := Respond(w, er, webErr.Status); err != nil {
 			return err
