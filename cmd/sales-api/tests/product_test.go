@@ -161,3 +161,18 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 		}
 	}
 }
+
+// CreateRequiresFields tests the request decoder for proper validation checks
+func (p *ProductTests) CreateRequiresFields(t *testing.T) {
+	body := strings.NewReader(`{}`)
+	req := httptest.NewRequest("POST", "/v1/products", body)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp := httptest.NewRecorder()
+
+	p.app.ServeHTTP(resp, req)
+
+	if resp.Code != http.StatusBadRequest {
+		t.Fatalf("expected status code %v, got %v", http.StatusBadRequest, resp.Code)
+	}
+}
