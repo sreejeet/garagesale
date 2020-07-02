@@ -25,17 +25,44 @@ func TestProducts(t *testing.T) {
 
 	p0, err := product.Create(ctx, db, newP, now)
 	if err != nil {
-		t.Fatalf("Creating product: %s", err)
+		t.Fatalf("creating product: %s", err)
 	}
 
 	p1, err := product.Retrieve(ctx, db, p0.ID)
 	if err != nil {
-		t.Fatalf("Getting product: %s", err)
+		t.Fatalf("getting product: %s", err)
 	}
 
 	if diff := cmp.Diff(p1, p0); diff != "" {
-		t.Fatalf("Fetched product not same as created product:\n%s", diff)
+		t.Fatalf("fetched product not same as created product:\n%s", diff)
 	}
+
+	update := product.UpdateProduct{
+		Name: tests.StringPointer("Updated name"),
+		Cost: tests.IntPointer(51),
+	}
+	updatedTime := time.Date(2020, time.January, 1, 1, 1, 1, 0, time.UTC)
+
+	if err := product.Update(ctx, db, p0.ID, update, updatedTime); err != nil {
+		t.Fatalf("updating product p0: %s", err)
+	}
+
+	saved, err := product.Retrieve(ctx, db, p0.ID)
+	if err != nil {
+		t.Fatalf("getting product p0: %s", err)
+	}
+
+	// Check specified fields were updated. Make a copy of the original product
+	// and change just the fields we expect then diff it with what was saved.
+	want := *p0
+	want.Name = "Comics"
+	want.Cost = 25
+	want.DateUpdated = updatedTime
+
+	if diff := cmp.Diff(want, *saved); diff != "" {
+		t.Fatalf("updated record did not match:\n%s", diff)
+	}
+
 }
 
 func TestProductList(t *testing.T) {
@@ -48,9 +75,9 @@ func TestProductList(t *testing.T) {
 
 	ps, err := product.List(context.Background(), db)
 	if err != nil {
-		t.Fatalf("Listing products: %s", err)
+		t.Fatalf("listing products: %s", err)
 	}
 	if exp, got := 2, len(ps); exp != got {
-		t.Fatalf("Expected product list size %v, got %v", exp, got)
+		t.Fatalf("expected product list size %v, got %v", exp, got)
 	}
 }
