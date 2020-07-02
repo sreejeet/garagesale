@@ -21,6 +21,18 @@ type NewProduct struct {
 	Quantity int    `json:"quantity" validate:"gte=1"`
 }
 
+// UpdateProduct defines what information may be provided to modify an
+// existing Product. All fields are optional so clients can send just the
+// fields they want changed. It uses pointer fields so we can differentiate
+// between a field that was not provided and a field that was provided as
+// explicitly blank. Normally we do not want to use pointers to basic types but
+// we make exceptions around marshalling/unmarshalling.
+type UpdateProduct struct {
+	Name     *string `json:"name"`
+	Cost     *int    `json:"cost" validate:"omitempty,gte=0"`
+	Quantity *int    `json:"quantity" validate:"omitempty,gte=1"`
+}
+
 // Sale type denotes a single sale transaction of a product.
 // Quantity is the number of items of a product were sold in this transaction.
 // Paid is the cumulative amount that was paid for this transaction
