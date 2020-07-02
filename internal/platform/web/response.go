@@ -11,6 +11,13 @@ import (
 // and writes it into the response writer.
 func Respond(w http.ResponseWriter, data interface{}, statusCode int) error {
 
+	// Handle a case where there is no content to send.
+	if statusCode == http.StatusNoContent {
+		w.WriteHeader(statusCode)
+		return nil
+	}
+
+	// Convert data to json string
 	res, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
 		return err
