@@ -38,7 +38,7 @@ func TestProducts(t *testing.T) {
 	}
 
 	update := product.UpdateProduct{
-		Name: tests.StringPointer("Updated name"),
+		Name: tests.StringPointer("Updated Name"),
 		Cost: tests.IntPointer(51),
 	}
 	updatedTime := time.Date(2020, time.January, 1, 1, 1, 1, 0, time.UTC)
@@ -55,8 +55,8 @@ func TestProducts(t *testing.T) {
 	// Check specified fields were updated. Make a copy of the original product
 	// and change just the fields we expect then diff it with what was saved.
 	want := *p0
-	want.Name = "Comics"
-	want.Cost = 25
+	want.Name = "Updated Name"
+	want.Cost = 51
 	want.DateUpdated = updatedTime
 
 	if diff := cmp.Diff(want, *saved); diff != "" {
