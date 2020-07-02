@@ -93,3 +93,41 @@ func Create(ctx context.Context, db *sqlx.DB, newProd NewProduct, now time.Time)
 
 	return &prod, nil
 }
+
+// Update modifies an existing product.
+func Update(ctx context.Context, db *sqlx.DB, id string, update UpdateProduct, now time.Time) error {
+
+	// Use the retrieve function to get the product to be updated.
+	p, err := Retrieve(ctx, db, id)
+	if err != nil {
+		return err
+	}
+
+	// Only update fields that have been passed as all fields are optional
+	if update.Name != nil {
+		p.Name = *update.Name
+	}
+	if update.Cost != nil {
+		p.Cost = *update.Cost
+	}
+	if update.Quantity != nil {
+		p.Quantity = *update.Quantity
+	}
+	p.DateUpdated = now
+
+	const q = `UPDATE products SET
+               "name" = $2,
+               "cost" = $3,
+               "quantity" = $4,
+               "date_updated" = $5
+               WHERE product_id = $1`
+	_, err = db.ExecContext(ctx, q, id,
+		p.Name, p.Cost,
+		p.Quantity, p.DateUpdated,
+	)
+	if err != nil {
+		return errors.Wrap(err, "updating product")
+	}
+
+	return nil
+}
