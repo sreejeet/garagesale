@@ -103,3 +103,26 @@ func (p *Products) ListSales(w http.ResponseWriter, r *http.Request) error {
 
 	return web.Respond(w, list, http.StatusOK)
 }
+
+// Update takes the product id from the url and updates the fields that have been provided to it.
+func (p *Products) Update(w http.ResponseWriter, r *http.Request) error {
+	id := chi.URLParam(r, "id")
+
+	var update product.UpdateProduct
+	if err := web.Decode(r, &update); err != nil {
+		return errors.Wrap(err, "decoding product update")
+	}
+
+	if err := product.Update(r.Context(), p.db, id, update, time.Now()); err != nil {
+		switch err {
+		case product.ErrNotFound:
+			return web.NewRequestError(err, http.StatusNotFound)
+		case product.ErrInvalidID:
+			return web.NewRequestError(err, http.StatusBadRequest)
+		default:
+			return errors.Wrapf(err, "updating product %q", id)
+		}
+	}
+
+	return web.Respond(w, nil, http.StatusNoContent)
+}
