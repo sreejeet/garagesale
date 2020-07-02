@@ -160,6 +160,53 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 			t.Fatalf("retrievedd product should match created. Diff:\n%s", diff)
 		}
 	}
+
+	{ // UPDATE
+		body := strings.NewReader(`{"name":"Updated Name","cost":20,"quantity":10}`)
+		url := fmt.Sprintf("/v1/products/%s", created["id"])
+		req := httptest.NewRequest("PUT", url, body)
+		req.Header.Set("Content-Type", "application/json")
+		resp := httptest.NewRecorder()
+
+		p.app.ServeHTTP(resp, req)
+
+		if resp.Code != http.StatusNoContent {
+			t.Fatalf("updating: expected status code %v, got %v", http.StatusNoContent, resp.Code)
+		}
+
+		// Retrieve updated record to be sure it worked.
+		req = httptest.NewRequest("GET", url, nil)
+		req.Header.Set("Content-Type", "application/json")
+		resp = httptest.NewRecorder()
+
+		p.app.ServeHTTP(resp, req)
+
+		if resp.Code != http.StatusOK {
+			t.Fatalf("retrieving: expected status code %v, got %v", http.StatusOK, resp.Code)
+		}
+
+		var updated map[string]interface{}
+		if err := json.NewDecoder(resp.Body).Decode(&updated); err != nil {
+			t.Fatalf("decoding: %s", err)
+		}
+
+		want := map[string]interface{}{
+			"id":           created["id"],
+			"date_created": created["date_created"],
+			"date_updated": updated["date_updated"],
+			"name":         "Updated Name",
+			"cost":         float64(20),
+			"quantity":     float64(10),
+			"sold":         float64(0),
+			"revenue":      float64(0),
+		}
+
+		// Updated product should match the one we created.
+		if diff := cmp.Diff(want, updated); diff != "" {
+			t.Fatalf("retrieved product should match created. Diff:\n%s", diff)
+		}
+	}
+
 }
 
 // CreateRequiresFields tests the request decoder for proper validation checks
