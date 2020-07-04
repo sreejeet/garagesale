@@ -207,6 +207,29 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 		}
 	}
 
+	{ // DELETE
+		url := fmt.Sprintf("/v1/products/%s", created["id"])
+		req := httptest.NewRequest("DELETE", url, nil)
+		resp := httptest.NewRecorder()
+
+		p.app.ServeHTTP(resp, req)
+
+		if resp.Code != http.StatusNoContent {
+			t.Fatalf("deleting: expected status code %v, got %v", http.StatusNoContent, resp.Code)
+		}
+
+		// Retrieve deleted record to be sure it worked.
+		req = httptest.NewRequest("GET", url, nil)
+		req.Header.Set("Content-Type", "application/json")
+		resp = httptest.NewRecorder()
+
+		p.app.ServeHTTP(resp, req)
+
+		if resp.Code != http.StatusNotFound {
+			t.Fatalf("retrieving: expected status code %v, got %v", http.StatusNotFound, resp.Code)
+		}
+	}
+
 }
 
 // CreateRequiresFields tests the request decoder for proper validation checks
