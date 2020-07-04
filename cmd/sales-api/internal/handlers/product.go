@@ -126,3 +126,20 @@ func (p *Products) Update(w http.ResponseWriter, r *http.Request) error {
 
 	return web.Respond(w, nil, http.StatusNoContent)
 }
+
+// Delete removes a specific product from the database based on the give id.
+func (p *Products) Delete(w http.ResponseWriter, r *http.Request) error {
+
+	id := chi.URLParam(r, "id")
+
+	if err := product.Delete(r.Context(), p.db, id); err != nil {
+		switch err {
+		case product.ErrInvalidID:
+			return web.NewRequestError(err, http.StatusBadRequest)
+		default:
+			return errors.Wrapf(err, "deleting product %q", id)
+		}
+	}
+
+	return web.Respond(w, nil, http.StatusNoContent)
+}
