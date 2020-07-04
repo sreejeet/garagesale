@@ -63,6 +63,16 @@ func TestProducts(t *testing.T) {
 		t.Fatalf("updated record did not match:\n%s", diff)
 	}
 
+	// Check if product delete works
+	if err := product.Delete(ctx, db, p0.ID); err != nil {
+		t.Fatalf("deleting product: %v", err)
+	}
+
+	_, err = product.Retrieve(ctx, db, p0.ID)
+	if err == nil {
+		t.Fatalf("should not be able to retrieve deleted product")
+	}
+
 }
 
 func TestProductList(t *testing.T) {
