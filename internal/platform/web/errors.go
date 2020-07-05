@@ -13,7 +13,7 @@ type Error struct {
 	Fields []FieldError
 }
 
-// Error implementes the error interface. It uses the default error
+// Error implements the error interface. It uses the default error
 // of the wrapped error. This is what will be visible on the services' logs.
 func (err *Error) Error() string {
 	return err.Err.Error()
