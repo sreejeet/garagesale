@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	_ "net/http/pprof" // Register the pprof handlers
+
 	"github.com/pkg/errors"
 	"github.com/sreejeet/garagesale/cmd/sales-api/internal/handlers"
 	"github.com/sreejeet/garagesale/internal/platform/conf"
@@ -31,6 +33,7 @@ func run() error {
 	var cfg struct {
 		Web struct {
 			Address         string        `conf:"default:localhost:8000"`
+			Debug           string        `conf:"default:localhost:6000"`
 			ReadTimeout     time.Duration `conf:"default:5s"`
 			WriteTimeout    time.Duration `conf:"default:5s"`
 			ShutdownTimeout time.Duration `conf:"default:5s"`
@@ -75,7 +78,14 @@ func run() error {
 	}
 	defer db.Close()
 
-	// productsHandler := handlers.Products{DB: db, Log: log}
+	// Start Debug Service
+	// Route '/debug/pprof' was added to the default mux by importing the net/http/pprof package.
+	// Not concerned with shutting this down when the application is shutdown.
+	go func() {
+		log.Println("debug service listening on", cfg.Web.Debug)
+		err := http.ListenAndServe(cfg.Web.Debug, http.DefaultServeMux)
+		log.Println("debug service closed", err)
+	}()
 
 	// Create api as a http.Server
 	api := http.Server{
