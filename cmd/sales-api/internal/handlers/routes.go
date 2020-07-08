@@ -5,13 +5,15 @@ import (
 	"net/http"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/sreejeet/garagesale/internal/mid"
 	"github.com/sreejeet/garagesale/internal/platform/web"
 )
 
 // API constructs an app instance with all application routes defined
 func API(db *sqlx.DB, log *log.Logger) http.Handler {
 
-	app := web.NewApp(log)
+	// App holds all the routes as well as middlewares
+	app := web.NewApp(log, mid.Errors(log))
 
 	{
 		c := Check{db: db}
