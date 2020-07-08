@@ -36,3 +36,5 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 16. [PostgreSQL Joins](https://www.postgresqltutorial.com/postgresql-joins/)
 17. [PostgreSQL SUM Function](https://www.postgresqltutorial.com/postgresql-sum-function/)
 18. [Profiling Go Programs](https://blog.golang.org/pprof)
+19. [Middleware (Advanced)](https://gowebexamples.com/advanced-middleware/)
+20. [Creating a Middleware in Golang for JWT based Authentication](https://hackernoon.com/creating-a-middleware-in-golang-for-jwt-based-authentication-cx3f32z8)
