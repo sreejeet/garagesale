@@ -28,9 +28,9 @@ func (c *Check) Health(w http.ResponseWriter, r *http.Request) error {
 		// Returning the error as it is will result in an unhandled exception,
 		// send a json web response insetead.
 		health.DBStatus = "The database is not accpeting requests at the moment."
-		return web.Respond(w, health, http.StatusInternalServerError)
+		return web.Respond(r.Context(), w, health, http.StatusInternalServerError)
 	}
 
 	health.DBStatus = "ok"
-	return web.Respond(w, health, http.StatusOK)
+	return web.Respond(r.Context(), w, health, http.StatusOK)
 }

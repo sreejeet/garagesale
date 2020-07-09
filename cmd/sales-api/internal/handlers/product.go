@@ -29,7 +29,7 @@ func (p *Products) List(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	// Using the web.Respond helper to return json
-	return web.Respond(w, list, http.StatusOK)
+	return web.Respond(r.Context(), w, list, http.StatusOK)
 }
 
 // Retrieve is used to get a single product based on its ID from the URL parameter.
@@ -49,7 +49,7 @@ func (p *Products) Retrieve(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	// Using the web.Respond helper to return json
-	return web.Respond(w, prod, http.StatusOK)
+	return web.Respond(r.Context(), w, prod, http.StatusOK)
 }
 
 // Create is used to create a new product from the body of a request.
@@ -71,7 +71,7 @@ func (p *Products) Create(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	// Using the web.Respond helper to return json
-	return web.Respond(w, &prod, http.StatusCreated)
+	return web.Respond(r.Context(), w, &prod, http.StatusCreated)
 }
 
 // AddSale records a new sale transaction for a specific product.
@@ -89,7 +89,7 @@ func (p *Products) AddSale(w http.ResponseWriter, r *http.Request) error {
 		return errors.Wrap(err, "adding new sale")
 	}
 
-	return web.Respond(w, sale, http.StatusCreated)
+	return web.Respond(r.Context(), w, sale, http.StatusCreated)
 }
 
 // ListSales lists all sales for a specific product.
@@ -101,7 +101,7 @@ func (p *Products) ListSales(w http.ResponseWriter, r *http.Request) error {
 		return errors.Wrap(err, "getting sales list")
 	}
 
-	return web.Respond(w, list, http.StatusOK)
+	return web.Respond(r.Context(), w, list, http.StatusOK)
 }
 
 // Update takes the product id from the url and updates the fields that have been provided to it.
@@ -124,7 +124,7 @@ func (p *Products) Update(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	return web.Respond(w, nil, http.StatusNoContent)
+	return web.Respond(r.Context(), w, nil, http.StatusNoContent)
 }
 
 // Delete removes a specific product from the database based on the give id.
@@ -141,5 +141,5 @@ func (p *Products) Delete(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
-	return web.Respond(w, nil, http.StatusNoContent)
+	return web.Respond(r.Context(), w, nil, http.StatusNoContent)
 }
