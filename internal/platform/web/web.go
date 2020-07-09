@@ -1,11 +1,25 @@
 package web
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 )
+
+// ctxKey represents the type of value for the context key.
+type ctxKey int
+
+// KeyValues is how request values are stored or retrieved.
+const KeyValues ctxKey = 1
+
+// Values struct stores key information about each request.
+type Values struct {
+	StatusCode int
+	Start      time.Time
+}
 
 // Handler is the func signature used by all handlers in this service
 type Handler func(http.ResponseWriter, *http.Request) error
@@ -35,6 +49,14 @@ func (a *App) Handle(method, url string, h Handler) {
 	h = wrapMiddleware(a.mw, h)
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
+
+		// Create a Values struct to record state for the request. Store the
+		// address in the request's context so it is sent down the call chain.
+		v := Values{
+			Start: time.Now(),
+		}
+		ctx := context.WithValue(r.Context(), KeyValues, &v)
+		r = r.WithContext(ctx)
 
 		// Run and catch any exeption from the handler chain.
 		if err := h(w, r); err != nil {
