@@ -13,7 +13,11 @@ import (
 func API(db *sqlx.DB, log *log.Logger) http.Handler {
 
 	// App holds all the routes as well as middlewares
-	app := web.NewApp(log, mid.Errors(log))
+	app := web.NewApp(
+		log,
+		mid.Errors(log),
+		mid.Metrics(),
+	)
 
 	{
 		c := Check{db: db}
