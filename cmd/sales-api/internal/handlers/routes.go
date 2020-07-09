@@ -12,9 +12,10 @@ import (
 // API constructs an app instance with all application routes defined
 func API(db *sqlx.DB, log *log.Logger) http.Handler {
 
-	// App holds all the routes as well as middlewares
+	// App holds all the routes as well as the middleware chain
 	app := web.NewApp(
 		log,
+		mid.Logger(log),
 		mid.Errors(log),
 		mid.Metrics(),
 	)
