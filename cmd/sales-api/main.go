@@ -10,7 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	_ "net/http/pprof" // Register the pprof handlers
+	_ "expvar"         // Register expvars handlers
+	_ "net/http/pprof" // Register pprof handlers
 
 	"github.com/pkg/errors"
 	"github.com/sreejeet/garagesale/cmd/sales-api/internal/handlers"
@@ -79,7 +80,10 @@ func run() error {
 	defer db.Close()
 
 	// Start Debug Service
+	//
 	// Route '/debug/pprof' was added to the default mux by importing the net/http/pprof package.
+	// Route '/debug/vars' was added to the default mux by importing the expvar package.
+	//
 	// Not concerned with shutting this down when the application is shutdown.
 	go func() {
 		log.Println("debug service listening on", cfg.Web.Debug)
