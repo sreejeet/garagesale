@@ -40,3 +40,4 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 20. [Creating a Middleware in Golang for JWT based Authentication](https://hackernoon.com/creating-a-middleware-in-golang-for-jwt-based-authentication-cx3f32z8)
 21. [How to instrument Go code with custom expvar metrics](https://sysdig.com/blog/golang-expvar-custom-metrics/)
 22. [Go App Monitoring: expvar, Prometheus and StatsD](https://www.opsdash.com/blog/golang-app-monitoring-statsd-expvar-prometheus.html)
+23. [Expose application metrics with expvar](http://blog.ralch.com/tutorial/golang-metrics-with-expvar/)
