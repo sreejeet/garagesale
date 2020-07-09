@@ -41,3 +41,4 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 21. [How to instrument Go code with custom expvar metrics](https://sysdig.com/blog/golang-expvar-custom-metrics/)
 22. [Go App Monitoring: expvar, Prometheus and StatsD](https://www.opsdash.com/blog/golang-app-monitoring-statsd-expvar-prometheus.html)
 23. [Expose application metrics with expvar](http://blog.ralch.com/tutorial/golang-metrics-with-expvar/)
+24. [Golang context.WithValue](https://stackoverflow.com/a/40380147/13512702)
