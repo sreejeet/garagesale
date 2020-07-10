@@ -1,6 +1,7 @@
 package mid
 
 import (
+	"context"
 	"expvar"
 	"net/http"
 	"runtime"
@@ -26,10 +27,10 @@ func Metrics() web.Middleware {
 
 	f := func(before web.Handler) web.Handler {
 
-		h := func(w http.ResponseWriter, r *http.Request) error {
+		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 
 			// Exeute the handler before this middleware here.
-			err := before(w, r)
+			err := before(ctx, w, r)
 
 			// Increment the request counter.
 			m.requests.Add(1)
