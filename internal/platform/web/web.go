@@ -22,7 +22,7 @@ type Values struct {
 }
 
 // Handler is the func signature used by all handlers in this service
-type Handler func(http.ResponseWriter, *http.Request) error
+type Handler func(context.Context, http.ResponseWriter, *http.Request) error
 
 // App will be the entry point to our REST API.
 // It will control the context of each request.
@@ -56,10 +56,9 @@ func (a *App) Handle(method, url string, h Handler) {
 			Start: time.Now(),
 		}
 		ctx := context.WithValue(r.Context(), KeyValues, &v)
-		r = r.WithContext(ctx)
 
 		// Run and catch any exeption from the handler chain.
-		if err := h(w, r); err != nil {
+		if err := h(ctx, w, r); err != nil {
 			// Logging to our logs
 			a.log.Printf("Unexpected err: %v+", err)
 		}
