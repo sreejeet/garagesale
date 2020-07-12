@@ -3,7 +3,6 @@ package schema
 import "github.com/jmoiron/sqlx"
 
 const seed = `
-	
 	-- Create sample products
 	INSERT INTO products (product_id, name, cost, quantity, date_created, date_updated) VALUES
 	('a2b0639f-2cc6-44b8-b97b-15d69dbb511e', 'Comic Books', 50, 42, '2019-01-01 00:00:01.000001+00', '2019-01-01 00:00:01.000001+00'),

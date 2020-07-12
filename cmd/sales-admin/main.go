@@ -1,14 +1,18 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/pkg/errors"
+	"github.com/sreejeet/garagesale/internal/platform/auth"
 	"github.com/sreejeet/garagesale/internal/platform/conf"
 	"github.com/sreejeet/garagesale/internal/platform/database"
 	"github.com/sreejeet/garagesale/internal/schema"
+	"github.com/sreejeet/garagesale/internal/user"
 )
 
 func main() {
@@ -44,38 +48,107 @@ func run() error {
 		return errors.Wrap(err, "parsing config")
 	}
 
-	// Open database connection for performing actions
-	db, err := database.Open(database.Config{
+	dbConfig := database.Config{
 		User:       cfg.DB.User,
 		Password:   cfg.DB.Password,
 		Host:       cfg.DB.Host,
 		Name:       cfg.DB.Name,
 		DisableTLS: cfg.DB.DisableTLS,
-	})
+	}
+
+	var err error
+	switch cfg.Args.Num(0) {
+	case "migrate":
+		err = migrate(dbConfig)
+	case "seed":
+		err = seed(dbConfig)
+	case "useradd":
+		err = useradd(dbConfig, cfg.Args.Num(1), cfg.Args.Num(2))
+	default:
+		err = errors.New("Must specify a command")
+	}
+
 	if err != nil {
-		return errors.Wrap(err, "connecting to database")
+		return err
+	}
+
+	return nil
+}
+
+// migrate the schema to the database
+func migrate(cfg database.Config) error {
+
+	db, err := database.Open(cfg)
+	if err != nil {
+		return err
 	}
 	defer db.Close()
 
-	switch cfg.Args.Num(0) {
-
-	case "migrate":
-		// Migrate database schema
-		if err := schema.Migrate(db); err != nil {
-			return errors.Wrap(err, "applying migrations")
-		}
-		log.Println("Completed migration")
-
-	case "seed":
-		// Seeding database
-		if err := schema.Seed(db); err != nil {
-			return errors.Wrap(err, "seeding database")
-		}
-		log.Println("Completed seeding database")
-
-	default:
-		log.Println("Please specify operation to perform")
+	if err := schema.Migrate(db); err != nil {
+		return err
 	}
 
+	fmt.Println("Migrations complete")
+	return nil
+}
+
+// seed this database with sample data
+func seed(cfg database.Config) error {
+
+	db, err := database.Open(cfg)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	if err := schema.Seed(db); err != nil {
+		return err
+	}
+
+	fmt.Println("Seed data complete")
+	return nil
+}
+
+// useradd creates new users from an email and password
+// This user will be created as an administrator
+func useradd(cfg database.Config, email, password string) error {
+
+	db, err := database.Open(cfg)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	if email == "" || password == "" {
+		return errors.New("useradd command must be called with two additional arguments for email and password")
+	}
+
+	fmt.Printf("Adding new administrator with email %q and password %q\n", email, password)
+	fmt.Print("Continue? (1/0) ")
+	var confirm bool
+	if _, err := fmt.Scanf("%t\n", &confirm); err != nil {
+		return errors.Wrap(err, "processing response")
+	}
+
+	if !confirm {
+		fmt.Println("Canceling")
+		return nil
+	}
+
+	ctx := context.Background()
+
+	nu := user.NewUser{
+		Email:           email,
+		Password:        password,
+		PasswordConfirm: password,
+		Roles:           []string{auth.RoleAdmin, auth.RoleUser},
+	}
+
+	u, err := user.Create(ctx, db, nu, time.Now())
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Administrator created with id:", u.ID)
 	return nil
 }
