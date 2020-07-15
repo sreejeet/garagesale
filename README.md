@@ -15,6 +15,7 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 1. Go's [net/http](https://golang.org/pkg/net/http/)
 2. [Docker](https://www.docker.com)
 3. [PostgreSQL](https://www.postgresql.org/)
+4. [JSON Web Tokens](https://jwt.io/)
 
 ## A consolidated list of resources I found useful.
 (Please raise an issue if you find broken links)
