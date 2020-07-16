@@ -47,3 +47,5 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 26. [How To Use Struct Tags in Go](https://www.digitalocean.com/community/tutorials/how-to-use-struct-tags-in-go)
 27. [Tags in Golang](https://medium.com/golangspec/tags-in-golang-3e5db0b8ef3e)
 28. [JSON Web Token Claims](https://auth0.com/docs/tokens/concepts/jwt-claims)
+29. [Implementing JSON Web Token (JWT) to secure your app](https://blog.nextzy.me/implementing-json-web-token-jwt-to-secure-your-app-c8e1bd6f6a29)
+30. [Symmetric vs Asymmetric JWTs](https://blog.usejournal.com/symmetric-vs-asymmetric-jwts-bd5d1a9567f6)
