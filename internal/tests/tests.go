@@ -66,13 +66,13 @@ func NewUnit(t *testing.T) (*sqlx.DB, func()) {
 }
 
 // StringPointer is a helper function to return a pointer to a string.
-// We do not need this outside testing so it is delcared here.
+// We do not need this outside testing so it is declared here.
 func StringPointer(s string) *string {
 	return &s
 }
 
 // IntPointer is a helper function to return a pointer to an int.
-// We do not need this outside testing so it is delcared here.
+// We do not need this outside testing so it is declared here.
 func IntPointer(i int) *int {
 	return &i
 }
