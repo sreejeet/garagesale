@@ -49,3 +49,5 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 28. [JSON Web Token Claims](https://auth0.com/docs/tokens/concepts/jwt-claims)
 29. [Implementing JSON Web Token (JWT) to secure your app](https://blog.nextzy.me/implementing-json-web-token-jwt-to-secure-your-app-c8e1bd6f6a29)
 30. [Symmetric vs Asymmetric JWTs](https://blog.usejournal.com/symmetric-vs-asymmetric-jwts-bd5d1a9567f6)
+31. [Hacking JSON Web Tokens (JWTs)](https://medium.com/swlh/hacking-json-web-tokens-jwts-9122efe91e4a)
+32. [Critical vulnerabilities in JSON Web Token libraries](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/)
