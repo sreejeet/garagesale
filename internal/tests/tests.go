@@ -1,17 +1,22 @@
 package tests
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
+	"log"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/sreejeet/garagesale/internal/platform/auth"
 	"github.com/sreejeet/garagesale/internal/platform/database"
 	"github.com/sreejeet/garagesale/internal/platform/database/databasetest"
 	"github.com/sreejeet/garagesale/internal/schema"
 )
 
 // NewUnit creates a test database inside a container and creates the reqired table structue.
-// In case of a failiour, it will call Fatal on the testing.T.
+// In case of a failiour, it will call Fatal on the testing.T parameter.
 func NewUnit(t *testing.T) (*sqlx.DB, func()) {
 	t.Helper()
 
@@ -63,6 +68,58 @@ func NewUnit(t *testing.T) (*sqlx.DB, func()) {
 	}
 
 	return db, teardown
+}
+
+// Test owns state for running and shutting down tests.
+type Test struct {
+	DB            *sqlx.DB
+	Log           *log.Logger
+	Authenticator *auth.Authenticator
+
+	t       *testing.T
+	cleanup func()
+}
+
+// New creates a database, seeds it, constructs an authenticator.
+func New(t *testing.T) *Test {
+	t.Helper()
+
+	// Initialize and seed database. Store the cleanup function call later.
+	db, cleanup := NewUnit(t)
+
+	if err := schema.Seed(db); err != nil {
+		t.Fatal(err)
+	}
+
+	// Create the logger to use.
+	logger := log.New(os.Stdout, "TEST : ", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
+
+	// Create RSA keys to enable authentication in our service.
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Build an authenticator using this static key.
+	kid := "4754d86b-7a6d-4df5-9c65-224741361492"
+	kf := auth.NewSimpleKeyLookupFunc(kid, key.Public().(*rsa.PublicKey))
+	authenticator, err := auth.NewAuthenticator(key, kid, "RS256", kf)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return &Test{
+		DB:            db,
+		Log:           logger,
+		Authenticator: authenticator,
+		t:             t,
+		cleanup:       cleanup,
+	}
+}
+
+// Teardown releases any resources used for the test.
+func (test *Test) Teardown() {
+	test.cleanup()
 }
 
 // StringPointer is a helper function to return a pointer to a string.
