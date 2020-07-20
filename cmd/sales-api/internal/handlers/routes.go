@@ -29,7 +29,7 @@ func API(db *sqlx.DB, log *log.Logger, authenticator *auth.Authenticator) http.H
 	}
 
 	{
-		// User registration routes
+		// User authentication routes
 		u := Users{db: db, authenticator: authenticator}
 		app.Handle(http.MethodGet, "/v1/users/token", u.Token)
 	}
