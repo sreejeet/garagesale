@@ -6,11 +6,12 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/sreejeet/garagesale/internal/mid"
+	"github.com/sreejeet/garagesale/internal/platform/auth"
 	"github.com/sreejeet/garagesale/internal/platform/web"
 )
 
 // API constructs an app instance with all application routes defined
-func API(db *sqlx.DB, log *log.Logger) http.Handler {
+func API(db *sqlx.DB, log *log.Logger, authenticator *auth.Authenticator) http.Handler {
 
 	// App holds all the routes as well as the middleware chain
 	app := web.NewApp(
@@ -25,6 +26,12 @@ func API(db *sqlx.DB, log *log.Logger) http.Handler {
 
 		// Health check route
 		app.Handle(http.MethodGet, "/v1/health", c.Health)
+	}
+
+	{
+		// User registration routes
+		u := Users{db: db, authenticator: authenticator}
+		app.Handle(http.MethodGet, "/v1/users/token", u.Token)
 	}
 
 	{
