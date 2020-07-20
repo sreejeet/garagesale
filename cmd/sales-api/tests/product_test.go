@@ -3,16 +3,13 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/sreejeet/garagesale/cmd/sales-api/internal/handlers"
-	"github.com/sreejeet/garagesale/internal/schema"
 	"github.com/sreejeet/garagesale/internal/tests"
 )
 
@@ -25,18 +22,10 @@ type ProductTests struct {
 func TestProducts(t *testing.T) {
 
 	// Create a new unit for testing
-	db, teardown := tests.NewUnit(t)
-	defer teardown()
+	test := tests.New(t)
+	defer test.Teardown()
 
-	// Seed the database int he above created unit
-	if err := schema.Seed(db); err != nil {
-		t.Fatal(err)
-	}
-
-	// Set where and how to log
-	log := log.New(os.Stderr, "TEST : ", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
-
-	tests := ProductTests{app: handlers.API(db, log)}
+	tests := ProductTests{app: handlers.API(test.DB, test.Log, test.Authenticator)}
 
 	t.Run("List", tests.List)
 	t.Run("ProductCRUD", tests.ProductCRUD)
