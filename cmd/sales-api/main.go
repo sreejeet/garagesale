@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"crypto/rsa"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -13,8 +15,10 @@ import (
 	_ "expvar"         // Register expvars handlers
 	_ "net/http/pprof" // Register pprof handlers
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
 	"github.com/sreejeet/garagesale/cmd/sales-api/internal/handlers"
+	"github.com/sreejeet/garagesale/internal/platform/auth"
 	"github.com/sreejeet/garagesale/internal/platform/conf"
 	"github.com/sreejeet/garagesale/internal/platform/database"
 )
@@ -48,6 +52,11 @@ func run() error {
 			// Currently set to true for convenience
 			DisableTLS bool `conf:"default:true"`
 		}
+		Auth struct {
+			KeyID          string `conf:"default:1"`
+			PrivateKeyFile string `conf:"default:private.pem"`
+			Algorithm      string `conf:"default:RS256"`
+		}
 	}
 
 	if err := conf.Parse(os.Args[1:], "SALES", &cfg); err != nil {
@@ -63,8 +72,18 @@ func run() error {
 	}
 
 	// Basic logging
-	log.Printf("Started service")
+	log.Print("Started service")
 	defer log.Print("Ended service")
+
+	// Initialize authentication support
+	authenticator, err := createAuth(
+		cfg.Auth.PrivateKeyFile,
+		cfg.Auth.KeyID,
+		cfg.Auth.Algorithm,
+	)
+	if err != nil {
+		return errors.Wrap(err, "constructing authenticator")
+	}
 
 	// Start database
 	db, err := database.Open(database.Config{
@@ -94,7 +113,7 @@ func run() error {
 	// Create api as a http.Server
 	api := http.Server{
 		Addr:         cfg.Web.Address,
-		Handler:      handlers.API(db, log),
+		Handler:      handlers.API(db, log, authenticator),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 	}
@@ -140,4 +159,23 @@ func run() error {
 	}
 
 	return nil
+}
+
+// createAuth ceates an authenticator. It reads a private key file, looks up the the
+// public key for it, then creats an authenticator using the algorithm provided for signing.
+func createAuth(privateKeyFile, keyID, algorithm string) (*auth.Authenticator, error) {
+
+	keyContents, err := ioutil.ReadFile(privateKeyFile)
+	if err != nil {
+		return nil, errors.Wrap(err, "reading auth private key")
+	}
+
+	key, err := jwt.ParseRSAPrivateKeyFromPEM(keyContents)
+	if err != nil {
+		return nil, errors.Wrap(err, "parsing auth private key")
+	}
+
+	public := auth.NewSimpleKeyLookupFunc(keyID, key.Public().(*rsa.PublicKey))
+
+	return auth.NewAuthenticator(key, keyID, algorithm, public)
 }
