@@ -97,3 +97,35 @@ func (a *Authenticator) GenerateToken(claims Claims) (string, error) {
 
 	return str, nil
 }
+
+// ParseClaims verifies the token signature, parses the claims and then returns a Claims object.
+func (a *Authenticator) ParseClaims(tokenStr string) (Claims, error) {
+
+	// keyFunc is a function that returns the public key for validating a token. We use
+	// the parsed (but unverified) token to find the key id. That ID is passed to
+	// our KeyFunc to find the public key to use for verification.
+	keyFunc := func(t *jwt.Token) (interface{}, error) {
+		kid, ok := t.Header["kid"]
+		if !ok {
+			return nil, errors.New("missing key id (kid) in token header")
+		}
+		userKID, ok := kid.(string)
+		if !ok {
+			return nil, errors.New("user token key id (kid) must be string")
+		}
+
+		return a.pubKeyLookupFunc(userKID)
+	}
+
+	var claims Claims
+	token, err := a.parser.ParseWithClaims(tokenStr, &claims, keyFunc)
+	if err != nil {
+		return Claims{}, errors.Wrap(err, "parsing token")
+	}
+
+	if !token.Valid {
+		return Claims{}, errors.New("invalid token")
+	}
+
+	return claims, nil
+}
