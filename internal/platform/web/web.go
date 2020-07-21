@@ -44,8 +44,12 @@ func NewApp(log *log.Logger, mw ...Middleware) *App {
 // Handle associates a handlerfunc with an HTTP method and URL pattern.
 // This converts our custom handler to the standard lib Handler type.
 // It captures errors and returns them to the client in a consistent manner.
-func (a *App) Handle(method, url string, h Handler) {
+func (a *App) Handle(method, url string, h Handler, mw ...Middleware) {
 
+	// Wrap with specific middleware provided
+	h = wrapMiddleware(mw, h)
+
+	// Wrap with other application middlewares
 	h = wrapMiddleware(a.mw, h)
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
