@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"log"
@@ -13,6 +14,7 @@ import (
 	"github.com/sreejeet/garagesale/internal/platform/database"
 	"github.com/sreejeet/garagesale/internal/platform/database/databasetest"
 	"github.com/sreejeet/garagesale/internal/schema"
+	"github.com/sreejeet/garagesale/internal/user"
 )
 
 // NewUnit creates a test database inside a container and creates the reqired table structue.
@@ -120,6 +122,26 @@ func New(t *testing.T) *Test {
 // Teardown releases any resources used for the test.
 func (test *Test) Teardown() {
 	test.cleanup()
+}
+
+// Token generates an authenticated token for a user.
+func (test *Test) Token(email, pass string) string {
+	test.t.Helper()
+
+	claims, err := user.Authenticate(
+		context.Background(), test.DB, time.Now(),
+		email, pass,
+	)
+	if err != nil {
+		test.t.Fatal(err)
+	}
+
+	tkn, err := test.Authenticator.GenerateToken(claims)
+	if err != nil {
+		test.t.Fatal(err)
+	}
+
+	return tkn
 }
 
 // StringPointer is a helper function to return a pointer to a string.
