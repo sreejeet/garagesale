@@ -17,6 +17,11 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 3. [PostgreSQL](https://www.postgresql.org/)
 4. [JSON Web Tokens](https://jwt.io/)
 
+## Run on local system
+1. Run `docker-compose up`
+2. Use `cmd/main.go` to migrate schema / seed database / add user / generate private key
+3. User `cmd/main.go` to start the sales API which listens at localhost:8000 by default
+
 ## A consolidated list of resources I found useful.
 (Please raise an issue if you find broken links)
 1. [The complete guide to Go net/http timeouts](https://blog.cloudflare.com/the-complete-guide-to-golang-net-http-timeouts/)
