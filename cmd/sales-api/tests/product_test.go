@@ -16,7 +16,8 @@ import (
 // ProductTests is used for passing dependencies for tests and also simplify
 // adding subtests.
 type ProductTests struct {
-	app http.Handler
+	app        http.Handler
+	adminToken string
 }
 
 func TestProducts(t *testing.T) {
@@ -25,7 +26,10 @@ func TestProducts(t *testing.T) {
 	test := tests.New(t)
 	defer test.Teardown()
 
-	tests := ProductTests{app: handlers.API(test.DB, test.Log, test.Authenticator)}
+	tests := ProductTests{
+		app:        handlers.API(test.DB, test.Log, test.Authenticator),
+		adminToken: test.Token("admin@example.com", "gophers"),
+	}
 
 	t.Run("List", tests.List)
 	t.Run("ProductCRUD", tests.ProductCRUD)
@@ -33,7 +37,9 @@ func TestProducts(t *testing.T) {
 
 // List tests the listing of products from the API
 func (p *ProductTests) List(t *testing.T) {
+
 	req := httptest.NewRequest("GET", "/v1/products", nil)
+	req.Header.Set("Authorization", "Bearer "+p.adminToken)
 	resp := httptest.NewRecorder()
 
 	p.app.ServeHTTP(resp, req)
@@ -89,6 +95,7 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 
 		req := httptest.NewRequest("POST", "/v1/products", body)
 		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+p.adminToken)
 		resp := httptest.NewRecorder()
 
 		p.app.ServeHTTP(resp, req)
@@ -131,6 +138,7 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 		url := fmt.Sprintf("/v1/products/%s", created["id"])
 		req := httptest.NewRequest("GET", url, nil)
 		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+p.adminToken)
 		resp := httptest.NewRecorder()
 
 		p.app.ServeHTTP(resp, req)
@@ -155,6 +163,7 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 		url := fmt.Sprintf("/v1/products/%s", created["id"])
 		req := httptest.NewRequest("PUT", url, body)
 		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+p.adminToken)
 		resp := httptest.NewRecorder()
 
 		p.app.ServeHTTP(resp, req)
@@ -166,6 +175,7 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 		// Retrieve updated record to be sure it worked.
 		req = httptest.NewRequest("GET", url, nil)
 		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+p.adminToken)
 		resp = httptest.NewRecorder()
 
 		p.app.ServeHTTP(resp, req)
@@ -199,6 +209,7 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 	{ // DELETE
 		url := fmt.Sprintf("/v1/products/%s", created["id"])
 		req := httptest.NewRequest("DELETE", url, nil)
+		req.Header.Set("Authorization", "Bearer "+p.adminToken)
 		resp := httptest.NewRecorder()
 
 		p.app.ServeHTTP(resp, req)
@@ -210,6 +221,7 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 		// Retrieve deleted record to be sure it worked.
 		req = httptest.NewRequest("GET", url, nil)
 		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+p.adminToken)
 		resp = httptest.NewRecorder()
 
 		p.app.ServeHTTP(resp, req)
@@ -223,8 +235,11 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 
 // CreateRequiresFields tests the request decoder for proper validation checks
 func (p *ProductTests) CreateRequiresFields(t *testing.T) {
+
 	body := strings.NewReader(`{}`)
 	req := httptest.NewRequest("POST", "/v1/products", body)
+
+	req.Header.Set("Authorization", "Bearer "+p.adminToken)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp := httptest.NewRecorder()
