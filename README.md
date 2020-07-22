@@ -19,8 +19,8 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 
 ## Run on local system
 1. Run `docker-compose up`
-2. Use `cmd/main.go` to migrate schema / seed database / add user / generate private key
-3. User `cmd/main.go` to start the sales API which listens at localhost:8000 by default
+2. Use `cmd/sales-admin/main.go` to migrate schema / seed database / add user / generate private key
+3. User `cmd/sales-api/main.go` to start the sales API which listens at localhost:8000 by default
 
 ## A consolidated list of resources I found useful.
 (Please raise an issue if you find broken links)
