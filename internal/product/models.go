@@ -5,6 +5,7 @@ import "time"
 // Product is an individial item that can be sold.
 type Product struct {
 	ID          string    `db:"product_id" json:"id"`
+	UserID      string    `db:"user_id" json:"user_id"`
 	Name        string    `db:"name" json:"name"`
 	Cost        int       `db:"cost" json:"cost"`
 	Quantity    int       `db:"quantity" json:"quantity"`
