@@ -64,6 +64,7 @@ func (p *ProductTests) List(t *testing.T) {
 			"quantity":     float64(42),
 			"revenue":      float64(350),
 			"sold":         float64(7),
+			"user_id":      "00000000-0000-0000-0000-000000000000",
 			"date_created": "2019-01-01T00:00:01.000001Z",
 			"date_updated": "2019-01-01T00:00:01.000001Z",
 		},
@@ -74,6 +75,7 @@ func (p *ProductTests) List(t *testing.T) {
 			"quantity":     float64(120),
 			"revenue":      float64(225),
 			"sold":         float64(3),
+			"user_id":      "00000000-0000-0000-0000-000000000000",
 			"date_created": "2019-01-01T00:00:02.000001Z",
 			"date_updated": "2019-01-01T00:00:02.000001Z",
 		},
@@ -127,6 +129,7 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 			"quantity":     float64(6),
 			"sold":         float64(0),
 			"revenue":      float64(0),
+			"user_id":      tests.AdminID,
 		}
 
 		if diff := cmp.Diff(want, created); diff != "" {
@@ -198,6 +201,7 @@ func (p *ProductTests) ProductCRUD(t *testing.T) {
 			"quantity":     float64(10),
 			"sold":         float64(0),
 			"revenue":      float64(0),
+			"user_id":      tests.AdminID,
 		}
 
 		// Updated product should match the one we created.
