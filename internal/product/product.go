@@ -83,14 +83,10 @@ func Create(ctx context.Context, db *sqlx.DB, user auth.Claims, newProd NewProdu
 	}
 
 	const query = `INSERT INTO products
-		(product_id, name, cost, quantity, date_created, date_updated)
-		VALUES ($1, $2, $3, $4, $5, $6)
 		(product_id, user_id, name, cost, quantity, date_created, date_updated)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)`
 
 	_, err := db.ExecContext(ctx, query,
-		prod.ID, prod.Name,
-		prod.Cost, prod.Quantity,
 		prod.ID, prod.UserID,
 		prod.Name, prod.Cost, prod.Quantity,
 		prod.DateCreated, prod.DateUpdated)
