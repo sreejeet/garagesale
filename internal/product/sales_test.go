@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/sreejeet/garagesale/internal/platform/auth"
 	"github.com/sreejeet/garagesale/internal/product"
 	"github.com/sreejeet/garagesale/internal/tests"
 )
@@ -24,7 +25,15 @@ func TestSales(t *testing.T) {
 		Cost:     25,
 		Quantity: 6,
 	}
-	puzzles, err := product.Create(ctx, db, newPuzzles, now)
+
+	// Create a claims object with some random UUID for testing
+	claims := auth.NewClaims(
+		"718ffbea-f4a1-4667-8ae3-b349da52675e",
+		[]string{auth.RoleAdmin, auth.RoleUser},
+		now, time.Hour,
+	)
+
+	puzzles, err := product.Create(ctx, db, claims, newPuzzles, now)
 	if err != nil {
 		t.Fatalf("creating product: %s", err)
 	}
@@ -34,7 +43,7 @@ func TestSales(t *testing.T) {
 		Cost:     40,
 		Quantity: 3,
 	}
-	toys, err := product.Create(ctx, db, newToys, now)
+	toys, err := product.Create(ctx, db, claims, newToys, now)
 	if err != nil {
 		t.Fatalf("creating product: %s", err)
 	}
