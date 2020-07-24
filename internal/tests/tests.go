@@ -17,6 +17,13 @@ import (
 	"github.com/sreejeet/garagesale/internal/user"
 )
 
+// These are the IDs in the seed data for
+// admin@example.com and user@example.com.
+const (
+	AdminID = "5cf37266-3473-4006-984f-9325122678b7"
+	UserID  = "45b5fbd3-755f-4379-8f07-a58d4a30fa2f"
+)
+
 // NewUnit creates a test database inside a container and creates the reqired table structue.
 // In case of a failiour, it will call Fatal on the testing.T parameter.
 func NewUnit(t *testing.T) (*sqlx.DB, func()) {
