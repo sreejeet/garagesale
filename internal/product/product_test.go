@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/sreejeet/garagesale/internal/platform/auth"
 	"github.com/sreejeet/garagesale/internal/product"
 	"github.com/sreejeet/garagesale/internal/schema"
 	"github.com/sreejeet/garagesale/internal/tests"
@@ -23,7 +24,14 @@ func TestProducts(t *testing.T) {
 	now := time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC)
 	ctx := context.Background()
 
-	p0, err := product.Create(ctx, db, newP, now)
+	// Create a claims object with some random UUID for testing
+	claims := auth.NewClaims(
+		"718ffbea-f4a1-4667-8ae3-b349da52675e",
+		[]string{auth.RoleAdmin, auth.RoleUser},
+		now, time.Hour,
+	)
+
+	p0, err := product.Create(ctx, db, claims, newP, now)
 	if err != nil {
 		t.Fatalf("creating product: %s", err)
 	}
@@ -43,7 +51,7 @@ func TestProducts(t *testing.T) {
 	}
 	updatedTime := time.Date(2020, time.January, 1, 1, 1, 1, 0, time.UTC)
 
-	if err := product.Update(ctx, db, p0.ID, update, updatedTime); err != nil {
+	if err := product.Update(ctx, db, claims, p0.ID, update, updatedTime); err != nil {
 		t.Fatalf("updating product p0: %s", err)
 	}
 
