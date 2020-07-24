@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"github.com/sreejeet/garagesale/internal/platform/auth"
 )
 
 // Custom errors for expected failing conditions
@@ -16,6 +17,8 @@ var (
 	ErrInvalidID = errors.New("invalid ID")
 	// Unable to find product based on UUID
 	ErrNotFound = errors.New("product not found")
+	// ErrForbidden occurs when a user tries something they dont have access to.
+	ErrForbidden = errors.New("Attempted action is not allowed")
 )
 
 // List retrieves all products from the database
@@ -67,10 +70,11 @@ func Retrieve(ctx context.Context, db *sqlx.DB, id string) (*Product, error) {
 }
 
 // Create creates a new product int the database and return the created product.
-func Create(ctx context.Context, db *sqlx.DB, newProd NewProduct, now time.Time) (*Product, error) {
+func Create(ctx context.Context, db *sqlx.DB, user auth.Claims, newProd NewProduct, now time.Time) (*Product, error) {
 
 	prod := Product{
 		ID:          uuid.New().String(),
+		UserID:      user.Subject,
 		Name:        newProd.Name,
 		Cost:        newProd.Cost,
 		Quantity:    newProd.Quantity,
@@ -80,11 +84,15 @@ func Create(ctx context.Context, db *sqlx.DB, newProd NewProduct, now time.Time)
 
 	const query = `INSERT INTO products
 		(product_id, name, cost, quantity, date_created, date_updated)
-		VALUES ($1, $2, $3, $4, $5, $6)`
+		VALUES ($1, $2, $3, $4, $5, $6)
+		(product_id, user_id, name, cost, quantity, date_created, date_updated)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)`
 
 	_, err := db.ExecContext(ctx, query,
 		prod.ID, prod.Name,
 		prod.Cost, prod.Quantity,
+		prod.ID, prod.UserID,
+		prod.Name, prod.Cost, prod.Quantity,
 		prod.DateCreated, prod.DateUpdated)
 
 	if err != nil {
@@ -95,12 +103,18 @@ func Create(ctx context.Context, db *sqlx.DB, newProd NewProduct, now time.Time)
 }
 
 // Update modifies an existing product.
-func Update(ctx context.Context, db *sqlx.DB, id string, update UpdateProduct, now time.Time) error {
+func Update(ctx context.Context, db *sqlx.DB, user auth.Claims, id string, update UpdateProduct, now time.Time) error {
 
 	// Use the retrieve function to get the product to be updated.
 	p, err := Retrieve(ctx, db, id)
 	if err != nil {
 		return err
+	}
+
+	// Only allow this action to be performed by an admin
+	// or the owner of this product.
+	if !user.HasRole(auth.RoleAdmin) && p.UserID != user.Subject {
+		return ErrForbidden
 	}
 
 	// Only update fields that have been passed as all fields are optional
