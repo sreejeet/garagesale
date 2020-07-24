@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"github.com/sreejeet/garagesale/internal/platform/auth"
 	"github.com/sreejeet/garagesale/internal/platform/web"
 	"github.com/sreejeet/garagesale/internal/product"
 )
@@ -58,6 +59,11 @@ func (p *Products) Retrieve(ctx context.Context, w http.ResponseWriter, r *http.
 // in conformance to the RESTful architecture.
 func (p *Products) Create(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 
+	claims, ok := ctx.Value(auth.Key).(auth.Claims)
+	if !ok {
+		return errors.New("claims missing from context")
+	}
+
 	var newProd product.NewProduct
 
 	// Decoding response body to NewProduct struct
@@ -66,7 +72,7 @@ func (p *Products) Create(ctx context.Context, w http.ResponseWriter, r *http.Re
 	}
 
 	// Creating product in database
-	prod, err := product.Create(ctx, p.db, newProd, time.Now())
+	prod, err := product.Create(ctx, p.db, claims, newProd, time.Now())
 	if err != nil {
 		return errors.Wrap(err, "Error creating product")
 	}
@@ -78,6 +84,7 @@ func (p *Products) Create(ctx context.Context, w http.ResponseWriter, r *http.Re
 // AddSale records a new sale transaction for a specific product.
 // It takes a NewSale object in json from and returns the added record to the caller.
 func (p *Products) AddSale(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
 	var ns product.NewSale
 	if err := web.Decode(r, &ns); err != nil {
 		return errors.Wrap(err, "decoding new sale")
@@ -107,6 +114,7 @@ func (p *Products) ListSales(ctx context.Context, w http.ResponseWriter, r *http
 
 // Update takes the product id from the url and updates the fields that have been provided to it.
 func (p *Products) Update(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
 	id := chi.URLParam(r, "id")
 
 	var update product.UpdateProduct
@@ -114,12 +122,19 @@ func (p *Products) Update(ctx context.Context, w http.ResponseWriter, r *http.Re
 		return errors.Wrap(err, "decoding product update")
 	}
 
-	if err := product.Update(ctx, p.db, id, update, time.Now()); err != nil {
+	claims, ok := ctx.Value(auth.Key).(auth.Claims)
+	if !ok {
+		return errors.New("claims missing from context")
+	}
+
+	if err := product.Update(ctx, p.db, claims, id, update, time.Now()); err != nil {
 		switch err {
 		case product.ErrNotFound:
 			return web.NewRequestError(err, http.StatusNotFound)
 		case product.ErrInvalidID:
 			return web.NewRequestError(err, http.StatusBadRequest)
+		case product.ErrForbidden:
+			return web.NewRequestError(err, http.StatusForbidden)
 		default:
 			return errors.Wrapf(err, "updating product %q", id)
 		}
