@@ -6,6 +6,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // The drier being used
+	"go.opencensus.io/trace"
 )
 
 // Config struct holds the required database parameters
@@ -43,6 +44,9 @@ func Open(cfg Config) (*sqlx.DB, error) {
 // StatusCheck returns an error in case the databse is not working as expected
 // or nil if everythign is fine.
 func StatusCheck(ctx context.Context, db *sqlx.DB) error {
+
+	ctx, span := trace.StartSpan(ctx, "platform.DB.StatusCheck")
+	defer span.End()
 
 	// Avoid running a ping request for health checks as it may return a false positive.
 	// Run a qurey instead to make sure the database is accepting and honoring requests.
