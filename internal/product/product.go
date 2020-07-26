@@ -9,6 +9,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/sreejeet/garagesale/internal/platform/auth"
+	"go.opencensus.io/trace"
 )
 
 // Custom errors for expected failing conditions
@@ -23,6 +24,9 @@ var (
 
 // List retrieves all products from the database
 func List(ctx context.Context, db *sqlx.DB) ([]Product, error) {
+
+	ctx, span := trace.StartSpan(ctx, "internal.product.List")
+	defer span.End()
 
 	products := []Product{}
 	const query = `SELECT
@@ -42,6 +46,9 @@ func List(ctx context.Context, db *sqlx.DB) ([]Product, error) {
 
 // Retrieve is used to get a single product based on its ID from the URL parameter.
 func Retrieve(ctx context.Context, db *sqlx.DB, id string) (*Product, error) {
+
+	ctx, span := trace.StartSpan(ctx, "internal.product.Retrieve")
+	defer span.End()
 
 	// Check for invalid UUID
 	if _, err := uuid.Parse(id); err != nil {
@@ -72,6 +79,9 @@ func Retrieve(ctx context.Context, db *sqlx.DB, id string) (*Product, error) {
 // Create creates a new product int the database and return the created product.
 func Create(ctx context.Context, db *sqlx.DB, user auth.Claims, newProd NewProduct, now time.Time) (*Product, error) {
 
+	ctx, span := trace.StartSpan(ctx, "internal.product.Create")
+	defer span.End()
+
 	prod := Product{
 		ID:          uuid.New().String(),
 		UserID:      user.Subject,
@@ -100,6 +110,9 @@ func Create(ctx context.Context, db *sqlx.DB, user auth.Claims, newProd NewProdu
 
 // Update modifies an existing product.
 func Update(ctx context.Context, db *sqlx.DB, user auth.Claims, id string, update UpdateProduct, now time.Time) error {
+
+	ctx, span := trace.StartSpan(ctx, "internal.product.Update")
+	defer span.End()
 
 	// Use the retrieve function to get the product to be updated.
 	p, err := Retrieve(ctx, db, id)
@@ -144,6 +157,9 @@ func Update(ctx context.Context, db *sqlx.DB, user auth.Claims, id string, updat
 
 // Delete removes products from the database based on the id provided.
 func Delete(ctx context.Context, db *sqlx.DB, id string) error {
+
+	ctx, span := trace.StartSpan(ctx, "internal.product.Delete")
+	defer span.End()
 
 	if _, err := uuid.Parse(id); err != nil {
 		return ErrInvalidID
