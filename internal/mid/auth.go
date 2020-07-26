@@ -8,6 +8,7 @@ import (
 
 	"github.com/sreejeet/garagesale/internal/platform/auth"
 	"github.com/sreejeet/garagesale/internal/platform/web"
+	"go.opencensus.io/trace"
 )
 
 // ErrForbidden indicates an authenticated trying to use actions that are
@@ -26,6 +27,9 @@ func Authenticate(authenticator *auth.Authenticator) web.Middleware {
 		// Wrap this handler around the next one provided.
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 
+			ctx, span := trace.StartSpan(ctx, "internal.mid.Authenticate")
+			defer span.End()
+
 			// Parse the authorization header in format `Bearer <token>`.
 			parts := strings.Split(r.Header.Get("Authorization"), " ")
 			if len(parts) != 2 || parts[0] != "Bearer" {
@@ -33,7 +37,9 @@ func Authenticate(authenticator *auth.Authenticator) web.Middleware {
 				return web.NewRequestError(err, http.StatusUnauthorized)
 			}
 
+			_, span = trace.StartSpan(ctx, "auth.ParseClaims")
 			claims, err := authenticator.ParseClaims(parts[1])
+			span.End()
 			if err != nil {
 				return web.NewRequestError(err, http.StatusUnauthorized)
 			}
@@ -58,6 +64,9 @@ func HasRole(roles ...string) web.Middleware {
 	f := func(after web.Handler) web.Handler {
 
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
+			ctx, span := trace.StartSpan(ctx, "internal.mid.HasRole")
+			defer span.End()
 
 			claims, ok := ctx.Value(auth.Key).(auth.Claims)
 			if !ok {
