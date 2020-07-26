@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"go.opencensus.io/trace"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/sreejeet/garagesale/internal/platform/auth"
@@ -20,6 +21,9 @@ var (
 
 // Create is used to create a new user.
 func Create(ctx context.Context, db *sqlx.DB, n NewUser, now time.Time) (*User, error) {
+
+	ctx, span := trace.StartSpan(ctx, "internal.user.Create")
+	defer span.End()
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(n.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -57,6 +61,9 @@ func Create(ctx context.Context, db *sqlx.DB, n NewUser, now time.Time) (*User, 
 // and if this succeeds, a Claims object is returned. This Claims object is used to
 // create a token for future authenctications.
 func Authenticate(ctx context.Context, db *sqlx.DB, now time.Time, email, password string) (auth.Claims, error) {
+
+	ctx, span := trace.StartSpan(ctx, "internal.user.Authenticate")
+	defer span.End()
 
 	// Query for email search
 	const q = `SELECT * FROM users WHERE email = $1`
