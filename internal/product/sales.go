@@ -7,10 +7,15 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"go.opencensus.io/trace"
 )
 
 // AddSale records a single sale transaction for a product.
 func AddSale(ctx context.Context, db *sqlx.DB, ns NewSale, productID string, now time.Time) (*Sale, error) {
+
+	ctx, span := trace.StartSpan(ctx, "internal.product.AddSale")
+	defer span.End()
+
 	s := Sale{
 		ID:          uuid.New().String(),
 		ProductID:   productID,
@@ -36,6 +41,10 @@ func AddSale(ctx context.Context, db *sqlx.DB, ns NewSale, productID string, now
 
 // ListSales lists all sale transactions for a product.
 func ListSales(ctx context.Context, db *sqlx.DB, productID string) ([]Sale, error) {
+
+	ctx, span := trace.StartSpan(ctx, "internal.product.ListSales")
+	defer span.End()
+
 	sales := []Sale{}
 
 	const q = `SELECT * FROM sales WHERE product_id = $1`
