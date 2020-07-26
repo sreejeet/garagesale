@@ -12,6 +12,7 @@ import (
 	"github.com/sreejeet/garagesale/internal/platform/auth"
 	"github.com/sreejeet/garagesale/internal/platform/web"
 	"github.com/sreejeet/garagesale/internal/product"
+	"go.opencensus.io/trace"
 )
 
 // Products define all handlers for products. It also holds
@@ -25,6 +26,9 @@ type Products struct {
 // a json list of products.
 func (p *Products) List(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 
+	ctx, span := trace.StartSpan(ctx, "handlers.Product.List")
+	defer span.End()
+
 	list, err := product.List(ctx, p.db)
 	if err != nil {
 		return errors.Wrap(err, "Error listing products")
@@ -36,6 +40,9 @@ func (p *Products) List(ctx context.Context, w http.ResponseWriter, r *http.Requ
 
 // Retrieve is used to get a single product based on its ID from the URL parameter.
 func (p *Products) Retrieve(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
+	ctx, span := trace.StartSpan(ctx, "handlers.Products.Retrieve")
+	defer span.End()
 
 	id := chi.URLParam(r, "id")
 	prod, err := product.Retrieve(ctx, p.db, id)
@@ -59,14 +66,16 @@ func (p *Products) Retrieve(ctx context.Context, w http.ResponseWriter, r *http.
 // in conformance to the RESTful architecture.
 func (p *Products) Create(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 
+	ctx, span := trace.StartSpan(ctx, "handlers.Products.Create")
+	defer span.End()
+
 	claims, ok := ctx.Value(auth.Key).(auth.Claims)
 	if !ok {
 		return errors.New("claims missing from context")
 	}
 
-	var newProd product.NewProduct
-
 	// Decoding response body to NewProduct struct
+	var newProd product.NewProduct
 	if err := web.Decode(r, &newProd); err != nil {
 		return errors.Wrap(err, "Error decoding product")
 	}
@@ -85,6 +94,9 @@ func (p *Products) Create(ctx context.Context, w http.ResponseWriter, r *http.Re
 // It takes a NewSale object in json from and returns the added record to the caller.
 func (p *Products) AddSale(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 
+	ctx, span := trace.StartSpan(ctx, "handlers.Products.AddSale")
+	defer span.End()
+
 	var ns product.NewSale
 	if err := web.Decode(r, &ns); err != nil {
 		return errors.Wrap(err, "decoding new sale")
@@ -102,6 +114,10 @@ func (p *Products) AddSale(ctx context.Context, w http.ResponseWriter, r *http.R
 
 // ListSales lists all sales for a specific product.
 func (p *Products) ListSales(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
+	ctx, span := trace.StartSpan(ctx, "handlers.Products.ListSales")
+	defer span.End()
+
 	id := chi.URLParam(r, "id")
 
 	list, err := product.ListSales(ctx, p.db, id)
@@ -114,6 +130,9 @@ func (p *Products) ListSales(ctx context.Context, w http.ResponseWriter, r *http
 
 // Update takes the product id from the url and updates the fields that have been provided to it.
 func (p *Products) Update(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
+	ctx, span := trace.StartSpan(ctx, "handlers.Products.Update")
+	defer span.End()
 
 	id := chi.URLParam(r, "id")
 
@@ -145,6 +164,9 @@ func (p *Products) Update(ctx context.Context, w http.ResponseWriter, r *http.Re
 
 // Delete removes a specific product from the database based on the give id.
 func (p *Products) Delete(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
+	ctx, span := trace.StartSpan(ctx, "handlers.Products.Delete")
+	defer span.End()
 
 	id := chi.URLParam(r, "id")
 
