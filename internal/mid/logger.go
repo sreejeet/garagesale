@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/sreejeet/garagesale/internal/platform/web"
+	"go.opencensus.io/trace"
 )
 
 // Logger middleware logs info for each requets in the format
@@ -19,6 +20,9 @@ func Logger(log *log.Logger) web.Middleware {
 
 		// Create the handler that will be attached in the middleware chain.
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
+			ctx, span := trace.StartSpan(ctx, "internal.mid.RequestLogger")
+			defer span.End()
 
 			// Get keys from the context, return error in case the value is not found.
 			v, ok := ctx.Value(web.KeyValues).(*web.Values)

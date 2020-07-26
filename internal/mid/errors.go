@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/sreejeet/garagesale/internal/platform/web"
+	"go.opencensus.io/trace"
 )
 
 // Errors handles errors from the middleware chains and
@@ -18,6 +19,9 @@ func Errors(log *log.Logger) web.Middleware {
 	f := func(before web.Handler) web.Handler {
 
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
+			ctx, span := trace.StartSpan(ctx, "internal.mid.Errors")
+			defer span.End()
 
 			// Run the handler chain and catch any propagated error.
 			if err := before(ctx, w, r); err != nil {
