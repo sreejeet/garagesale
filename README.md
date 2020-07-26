@@ -16,6 +16,7 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 2. [Docker](https://www.docker.com)
 3. [PostgreSQL](https://www.postgresql.org/)
 4. [JSON Web Tokens](https://jwt.io/)
+5. [Zipkin](https://zipkin.io)
 
 ## Run on local system
 1. Run `docker-compose up`
