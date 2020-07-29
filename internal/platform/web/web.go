@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
+	"go.opencensus.io/plugin/ochttp"
+	"go.opencensus.io/plugin/ochttp/propagation/tracecontext"
 	"go.opencensus.io/trace"
 )
 
@@ -18,6 +20,7 @@ const KeyValues ctxKey = 1
 
 // Values struct stores key information about each request.
 type Values struct {
+	TraceID    string
 	StatusCode int
 	Start      time.Time
 }
@@ -31,15 +34,30 @@ type App struct {
 	log *log.Logger
 	mux *chi.Mux
 	mw  []Middleware
+	och *ochttp.Handler
 }
 
 // NewApp is a contructor for REST API App
 func NewApp(log *log.Logger, mw ...Middleware) *App {
-	return &App{
+	app := App{
 		log: log,
 		mux: chi.NewRouter(),
 		mw:  mw,
 	}
+
+	// Create an OpenCensus HTTP Handler which wraps the router. This will start
+	// the initial span and annotate it with information about the request/response.
+	//
+	// This is configured to use the W3C TraceContext standard to set the remote
+	// parent if a client request includes the appropriate headers.
+	// https://w3c.github.io/trace-context/
+	app.och = &ochttp.Handler{
+		Handler:     app.mux,
+		Propagation: &tracecontext.HTTPFormat{},
+	}
+
+	return &app
+
 }
 
 // Handle associates a handlerfunc with an HTTP method and URL pattern.
@@ -62,14 +80,15 @@ func (a *App) Handle(method, url string, h Handler, mw ...Middleware) {
 		// Create a Values struct to record state for the request. Store the
 		// address in the request's context so it is sent down the call chain.
 		v := Values{
-			Start: time.Now(),
+			TraceID: span.SpanContext().TraceID.String(),
+			Start:   time.Now(),
 		}
 		ctx = context.WithValue(r.Context(), KeyValues, &v)
 
 		// Run and catch any exeption from the handler chain.
 		if err := h(ctx, w, r); err != nil {
 			// Logging to our logs
-			a.log.Printf("Unexpected err: %v+", err)
+			a.log.Printf("%s : Unexpected error: %+v", v.TraceID, err)
 		}
 	}
 
@@ -78,5 +97,5 @@ func (a *App) Handle(method, url string, h Handler, mw ...Middleware) {
 
 // ServeHTTP implements the http.Handler interface
 func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	a.mux.ServeHTTP(w, r)
+	a.och.ServeHTTP(w, r)
 }
