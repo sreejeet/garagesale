@@ -19,6 +19,7 @@ func API(db *sqlx.DB, log *log.Logger, authenticator *auth.Authenticator) http.H
 		mid.Logger(log),
 		mid.Errors(log),
 		mid.Metrics(),
+		mid.Panics(log),
 	)
 
 	{
