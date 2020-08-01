@@ -17,6 +17,7 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 3. [PostgreSQL](https://www.postgresql.org/)
 4. [JSON Web Tokens](https://jwt.io/)
 5. [Zipkin](https://zipkin.io)
+6. [OpenCensus](https://opencensus.io)
 
 ## Run on local system
 1. Run `docker-compose up`
@@ -58,3 +59,4 @@ The open source [training material](https://github.com/ardanlabs/service-trainin
 31. [Hacking JSON Web Tokens (JWTs)](https://medium.com/swlh/hacking-json-web-tokens-jwts-9122efe91e4a)
 32. [Critical vulnerabilities in JSON Web Token libraries](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/)
 33. [Zipkin Tutorial: Get Started Easily With Distributed Tracing](https://www.scalyr.com/blog/zipkin-tutorial-distributed-tracing/)
+34. [OpenCensus Tracing](https://opencensus.io/tracing/)
