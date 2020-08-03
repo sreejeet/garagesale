@@ -1,5 +1,7 @@
 package web
 
+import "github.com/pkg/errors"
+
 // ErrorResponse is used as the default response type for any API errors.
 type ErrorResponse struct {
 	Error  string       `json:"error"`
@@ -29,4 +31,31 @@ type FieldError struct {
 // Only to be used by service handlers in case of known errors.
 func NewRequestError(err error, status int) error {
 	return &Error{err, status, nil}
+}
+
+// shutdown is a type used to help with the graceful termination of the service.
+// shutdown type is used for the graceful termination of the service
+// in case a critical or unexpected error has occoured.
+type shutdown struct {
+	Message string
+}
+
+// Error is the implementation of the error interface on a shutdown type instance
+func (s *shutdown) Error() string {
+	return s.Message
+}
+
+// NewShutdownError returns an error that causes the framework to signal
+// a graceful shutdown.
+func NewShutdownError(message string) error {
+	return &shutdown{message}
+}
+
+// IsShutdown checks to see if the shutdown error is contained
+// in the specified error value.
+func IsShutdown(err error) bool {
+	if _, ok := errors.Cause(err).(*shutdown); ok {
+		return true
+	}
+	return false
 }
