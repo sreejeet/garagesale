@@ -4,6 +4,8 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
+	"syscall"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -31,18 +33,20 @@ type Handler func(context.Context, http.ResponseWriter, *http.Request) error
 // App will be the entry point to our REST API.
 // It will control the context of each request.
 type App struct {
-	log *log.Logger
-	mux *chi.Mux
-	mw  []Middleware
-	och *ochttp.Handler
+	log      *log.Logger
+	mux      *chi.Mux
+	mw       []Middleware
+	och      *ochttp.Handler
+	shutdown chan os.Signal
 }
 
 // NewApp is a contructor for REST API App
-func NewApp(log *log.Logger, mw ...Middleware) *App {
+func NewApp(shutdown chan os.Signal, log *log.Logger, mw ...Middleware) *App {
 	app := App{
-		log: log,
-		mux: chi.NewRouter(),
-		mw:  mw,
+		log:      log,
+		mux:      chi.NewRouter(),
+		mw:       mw,
+		shutdown: shutdown,
 	}
 
 	// Create an OpenCensus HTTP Handler which wraps the router. This will start
@@ -88,7 +92,10 @@ func (a *App) Handle(method, url string, h Handler, mw ...Middleware) {
 		// Run and catch any exeption from the handler chain.
 		if err := h(ctx, w, r); err != nil {
 			// Logging to our logs
-			a.log.Printf("%s : Unexpected error: %+v", v.TraceID, err)
+			a.log.Printf("%s : unexpected error: %+v", v.TraceID, err)
+			if IsShutdown(err) {
+				a.SignalShutdown()
+			}
 		}
 	}
 
@@ -98,4 +105,11 @@ func (a *App) Handle(method, url string, h Handler, mw ...Middleware) {
 // ServeHTTP implements the http.Handler interface
 func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	a.och.ServeHTTP(w, r)
+}
+
+// SignalShutdown is used to gracefully shutdown the service
+// in case there is a critical or unexpected error
+func (a *App) SignalShutdown() {
+	a.log.Println("error returned from handler indicated integrity issue, shutting down service")
+	a.shutdown <- syscall.SIGSTOP
 }
