@@ -3,6 +3,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/sreejeet/garagesale/internal/mid"
@@ -11,10 +12,11 @@ import (
 )
 
 // API constructs an app instance with all application routes defined
-func API(db *sqlx.DB, log *log.Logger, authenticator *auth.Authenticator) http.Handler {
+func API(shutdown chan os.Signal, db *sqlx.DB, log *log.Logger, authenticator *auth.Authenticator) http.Handler {
 
 	// App holds all the routes as well as the middleware chain
 	app := web.NewApp(
+		shutdown,
 		log,
 		mid.Logger(log),
 		mid.Errors(log),

@@ -134,10 +134,15 @@ func run() error {
 		log.Println("debug service closed", err)
 	}()
 
+	// Another channel to receive OS signals like SIGINT or SIGTERM.
+	// The signal package requires this channel to be buffered.
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+
 	// Create api as a http.Server
 	api := http.Server{
 		Addr:         cfg.Web.Address,
-		Handler:      handlers.API(db, log, authenticator),
+		Handler:      handlers.API(shutdown, db, log, authenticator),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 	}
@@ -153,11 +158,6 @@ func run() error {
 		serverErrors <- api.ListenAndServe()
 	}()
 
-	// Another channel to receive OS signals like SIGINT or SIGTERM.
-	// The signal package requires this channel to be buffered.
-	shutdown := make(chan os.Signal, 1)
-	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
-
 	// Using the switch case construct, or in case of Go,
 	// the select construct to block main func till shutdown
 	select {
@@ -166,6 +166,9 @@ func run() error {
 
 	case <-shutdown:
 		log.Printf("Shutting down service")
+
+	case sig := <-shutdown:
+		log.Printf("main : received %v : starting shutdown", sig)
 
 		// Deadline for finishing any outstanding requests
 		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)
@@ -177,7 +180,11 @@ func run() error {
 			log.Printf("Could not gracefully shut down server in %v : %v", cfg.Web.ShutdownTimeout, err)
 			err = api.Close()
 		}
-		if err != nil {
+		// Log the status of this shutdown.
+		switch {
+		case sig == syscall.SIGSTOP:
+			return errors.New("critical or unexpected error issue caused shutdown")
+		case err != nil:
 			return errors.Wrap(err, "failed stopping server gracefully")
 		}
 	}
