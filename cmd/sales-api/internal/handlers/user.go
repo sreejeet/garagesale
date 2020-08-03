@@ -26,7 +26,7 @@ func (u *Users) Token(ctx context.Context, w http.ResponseWriter, r *http.Reques
 
 	v, ok := ctx.Value(web.KeyValues).(*web.Values)
 	if !ok {
-		return errors.New("web value missing from context")
+		return web.NewShutdownError("web value missing from context")
 	}
 
 	// Get the Basic Auth credentials
